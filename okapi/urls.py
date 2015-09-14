@@ -17,14 +17,17 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework import routers
-from users import views
+from users import views as uviews
+from groups import views as gviews
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
+router.register(r'users', uviews.UserViewSet)
+router.register(r'groups', gviews.GroupViewSet)
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include(router.urls)),
 ]
 
+# admin webinterface
 urlpatterns += staticfiles_urlpatterns()
