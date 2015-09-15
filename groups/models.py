@@ -7,7 +7,7 @@ class Group(models.Model):
     url = models.CharField(max_length=100)
     mailing = models.CharField(max_length=100)
     description = models.TextField()
-    parent_id = models.IntegerField()
+    parent = models.ForeignKey('self')
 
     def __unicode__(self):
         return self.name
@@ -15,7 +15,7 @@ class Group(models.Model):
 class GroupForm(ModelForm):
     class Meta:
         model = Group
-        fields = ['name', 'url', 'mailing', 'description', 'parent_id']
+        fields = ['name', 'url', 'mailing', 'description', 'parent']
 
 class GroupUser(models.Model):
     ROLES = [

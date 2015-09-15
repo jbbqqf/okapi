@@ -3,8 +3,8 @@ from groups.models import Group, GroupForm, GroupUser, GroupUserForm
 
 class GroupAdmin(admin.ModelAdmin):
     form = GroupForm
-    list_display = ['id', 'name', 'url', 'mailing', 'description', 'parent_id']
-    search_fields = ['name', 'url', 'mailing', 'description', 'parent_id']
+    list_display = ['id', 'name', 'url', 'mailing', 'description', 'parent']
+    search_fields = ['name', 'url', 'mailing', 'description', 'parent']
 
 class GroupUserAdmin(admin.ModelAdmin):
     form = GroupUserForm
