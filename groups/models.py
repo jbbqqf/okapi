@@ -9,6 +9,9 @@ class Group(models.Model):
     description = models.TextField()
     parent_id = models.IntegerField()
 
+    def __unicode__(self):
+        return self.name
+
 class GroupForm(ModelForm):
     class Meta:
         model = Group

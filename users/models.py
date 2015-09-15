@@ -9,6 +9,9 @@ class User(models.Model):
     profile_id = models.IntegerField(unique=True)
     locked = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return self.login
+
 class UserForm(ModelForm):
     class Meta:
         model = User
