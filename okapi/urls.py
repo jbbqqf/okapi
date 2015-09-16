@@ -17,13 +17,13 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework import routers
-import users.views
+import profiles.views
 import groups.views
 import chat.views
 
 router = routers.DefaultRouter()
-router.register(r'users', users.views.UserViewSet)
-router.register(r'profiles', users.views.ProfileViewSet)
+router.register(r'users', profiles.views.UserViewSet)
+router.register(r'profiles', profiles.views.ProfileViewSet)
 router.register(r'groups', groups.views.GroupViewSet)
 router.register(r'posts', chat.views.PostViewSet)
 
