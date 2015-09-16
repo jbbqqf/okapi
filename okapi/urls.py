@@ -17,13 +17,15 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework import routers
-from users import views as uviews
-from groups import views as gviews
+import users.views
+import groups.views
+import chat.views
 
 router = routers.DefaultRouter()
-router.register(r'users', uviews.UserViewSet)
-router.register(r'profiles', uviews.ProfileViewSet)
-router.register(r'groups', gviews.GroupViewSet)
+router.register(r'users', users.views.UserViewSet)
+router.register(r'profiles', users.views.ProfileViewSet)
+router.register(r'groups', groups.views.GroupViewSet)
+router.register(r'posts', chat.views.PostViewSet)
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
