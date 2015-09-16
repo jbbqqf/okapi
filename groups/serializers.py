@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from rest_framework import serializers
-from groups.models import Group
+from groups.models import Group, GroupUser
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ('name', 'url', 'ml', 'description', 'left', 'right')
+        fields = ('id', 'name', 'url', 'mailing', 'description', 'parent')
+
+class GroupUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GroupUser
+        fields = ('user', 'group', 'role')
