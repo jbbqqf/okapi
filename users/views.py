@@ -5,9 +5,9 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from groups.serializers import GroupSerializer
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, ProfileSerializer
 from groups.models import Group, GroupUser
-from users.models import User
+from users.models import User, Profile
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
@@ -24,3 +24,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
  
         serializer = GroupSerializer(groups, many=True)
         return Response(serializer.data)
+
+class ProfileViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer

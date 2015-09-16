@@ -22,6 +22,7 @@ from groups import views as gviews
 
 router = routers.DefaultRouter()
 router.register(r'users', uviews.UserViewSet)
+router.register(r'profiles', uviews.ProfileViewSet)
 router.register(r'groups', gviews.GroupViewSet)
 
 urlpatterns = [
