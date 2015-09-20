@@ -30,6 +30,13 @@ class GroupUser(models.Model):
     class Meta:
         unique_together = (('user', 'group'),)
 
+    def __unicode__(self):
+        role = 'unknown role'
+        for role_stored, role_title in self.ROLES:
+            if role_stored == self.role:
+                role = role_title
+        return u'{} is {} in {}'.format(self.user, role, self.group)
+
 class GroupUserForm(ModelForm):
     class Meta:
         model = GroupUser

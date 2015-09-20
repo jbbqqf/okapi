@@ -16,6 +16,9 @@ class Profile(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER, default=GENDER[0][0])
     user = models.ForeignKey(User)
 
+    def __unicode__(self):
+        return u'{}\'s profile'.format(self.user.username)
+
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
