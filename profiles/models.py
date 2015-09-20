@@ -11,8 +11,8 @@ class Profile(models.Model):
     ]
 
     nick = models.CharField(max_length=24)
-    birthday = models.DateField()
-    note = models.TextField()
+    birthday = models.DateField(blank=True, null=True)
+    note = models.TextField(blank=True)
     gender = models.CharField(max_length=1, choices=GENDER, default=GENDER[0][0])
     user = models.ForeignKey(User)
 

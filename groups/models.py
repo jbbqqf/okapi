@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 
 class Group(models.Model):
     name = models.CharField(max_length=30)
-    url = models.CharField(max_length=100)
-    mailing = models.CharField(max_length=100)
-    description = models.TextField()
+    url = models.CharField(max_length=100, blank=True)
+    mailing = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
     parent = models.ForeignKey('self')
 
     def __unicode__(self):
@@ -25,7 +25,7 @@ class GroupUser(models.Model):
 
     user = models.ForeignKey(User)
     group = models.ForeignKey(Group)
-    role = models.CharField(max_length=1, choices=ROLES)
+    role = models.CharField(max_length=1, choices=ROLES, default=ROLES[0][0])
 
     class Meta:
         unique_together = (('user', 'group'),)
