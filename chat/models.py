@@ -9,12 +9,15 @@ class Post(models.Model):
         ('s', 'score'),
     ]
 
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User)
     type = models.CharField(max_length=1, choices=TYPE, default=TYPE[0][0])
     content = models.CharField(max_length=512)
 
+    def __unicode__(self):
+        return u'{}: {}'.format(self.author, self.content)
+
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ['date', 'author', 'type', 'content']
+        fields = ['author', 'type', 'content']

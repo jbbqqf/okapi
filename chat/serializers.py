@@ -6,3 +6,4 @@ from chat.models import Post
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
+        read_only_fields = ('author', 'type',)
