@@ -7,14 +7,29 @@ from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
 
 from profiles.models import Profile
 from profiles.serializers import ProfileSerializer, UserSerializer
 from profiles.permissions import IsProfileOwnerOrReadOnly
+from groups.models import Group, GroupUser
+from groups.serializers import GroupSerializer
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    @detail_route()
+    def groups(self, request, pk=None):
+        user = self.get_object()
+        user_groups = GroupUser.objects.filter(user=user.id)
+
+        groups = []
+        for user_group in user_groups:
+            groups.append(Group.objects.get(id=user_group.group.id))
+
+        serializer = GroupSerializer(groups, many=True)
+        return Response(serializer.data)
 
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticatedOrReadOnly, IsProfileOwnerOrReadOnly,))
