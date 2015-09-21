@@ -28,3 +28,10 @@ class GroupViewSet(viewsets.ModelViewSet):
 
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
+
+@authentication_classes((SessionAuthentication, BasicAuthentication,))
+@permission_classes((IsAdminOrReadOnly,))
+class GroupUserViewSet(viewsets.ModelViewSet):
+    queryset = GroupUser.objects.all()
+    serializer_class = GroupUserSerializer
+    http_method_names = ['get', 'post', 'delete', 'head', 'options',]
