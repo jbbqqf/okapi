@@ -4,6 +4,14 @@ from django.forms import ModelForm
 from django.contrib.auth.models import User
 
 class Post(models.Model):
+    """
+    Basically the only thing you need for a chat application.
+
+    Connected users should be able to send `m` posts from the user interface.
+    For any other kind of post that could be displayed to users, only backend
+    through application requests should be allowed create those.
+    """
+
     TYPE = [
         ('m', 'message'),
         ('s', 'score'),

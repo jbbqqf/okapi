@@ -61,5 +61,11 @@ necessary.
     filter_class = PostFilter
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user,
-                        type='m')
+        """
+        Connected users should be able to send `m` posts from the user
+        interface. Any other kind of post that could be displayed to users
+        should be created by backend applications triggered by requests sent to
+        the API.
+        """
+
+        serializer.save(author=self.request.user, type='m')
