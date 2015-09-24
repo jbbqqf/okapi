@@ -18,6 +18,38 @@ from groups.models import Group, GroupUser
 from groups.serializers import GroupSerializer
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    === Provide basic informations about students from Telecom's LDAP ===
+
+    The route ~/users/ aims to provide basic informations about students
+    extracted from the school's LDAP directory. User objects are django's user.
+    That's why not much information is provided. If you want more about users
+    you should check users profiles.
+
+    is_staff field mean admin field in django's terms.
+
+    Thoses informations are read-only API wise, even for admins. If you really
+    want to manually edit a user (ie: is_staff field) you have to do it via the
+    django admin interface (it requires to be a staff member). Do not intend to
+    edit those informations without knowing what you are doing.
+
+    ---
+
+    list:
+        parameters:
+            - name: search
+              description: contain filter for first_name or last_name (multiple values separated by `,`)
+              paramType: query
+              type: string
+
+    retrieve:
+        parameters:
+            - name: search
+              description: contain filter for first_name or last_name (multiple values separated by `,`)
+              paramType: query
+              type: string
+    """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter,)
@@ -39,6 +71,33 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticatedOrReadOnly, IsProfileOwnerOrReadOnly,))
 class ProfileViewSet(viewsets.ModelViewSet):
+    """
+    === Profiles bring additional informations about users ===
+    
+    The main difference between ~/profiles/ and ~/users/ route is that users can
+    edit their profiles but cannot change their core account informations.
+
+    Only profile owner can perform PUT or PATCH requests. POST is not allowed
+    because your profile is supposed to be unique and created when you log in
+    for the first time.
+
+    ---
+
+    list:
+        parameters:
+            - name: search
+              description: contain filter for nick or note (multiple values separated by `,`)
+              paramType: query
+              type: string
+
+    retrieve:
+        parameters:
+            - name: search
+              description: contain filter for nick or note (multiple values separated by `,`)
+              paramType: query
+              type: string
+    """
+
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     http_method_names = ['get', 'put', 'patch', 'head', 'options',]

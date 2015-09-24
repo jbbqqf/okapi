@@ -16,6 +16,36 @@ from groups.filters import GroupFilter
 @authentication_classes((SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAdminOrReadOnly,))
 class GroupViewSet(viewsets.ModelViewSet):
+    """
+    === This set of groups includes both promotions and clubs ===
+
+    You can imagine many things to be regrouped in groups. Groups are especially
+    designed to handle promotions (hence the parent attribute) and clubs, which
+    are natural groups related to Telecom. But it is also possible to tag people
+    for some random reasons.
+
+    Parent field must be provided, and should refer a virtual root group if the
+    group you want to create is supposed to be a top-level group.
+
+    Only admins are allowed to update groups but anyone is able to read groups.
+
+    ---
+    
+    list:
+        parameters:
+            - name: search
+              description: contain filter for name, url, mailing or description
+              paramType: query
+              type: string
+
+    retrieve:
+        parameters:
+            - name: search
+              description: contain filter for name, url, mailing or description
+              paramType: query
+              type: string
+    """
+
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter,)
@@ -37,6 +67,15 @@ class GroupViewSet(viewsets.ModelViewSet):
 @authentication_classes((SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAdminOrReadOnly,))
 class GroupUserViewSet(viewsets.ModelViewSet):
+    """
+    === Many to many relationship to describe membership ===
+
+    Appart from user and group id, role is the last argument available here,
+    which is described by a single letter.
+
+    Only admins are allowed to POST or DELETE entries here.
+    """
+
     queryset = GroupUser.objects.all()
     serializer_class = GroupUserSerializer
     http_method_names = ['get', 'post', 'delete', 'head', 'options',]
