@@ -61,11 +61,9 @@ class GroupViewSet(viewsets.ModelViewSet):
         """
 
         group = self.get_object()
-        group_users = GroupUser.objects.filter(group=group.id)
+        group_members = GroupUser.objects.filter(group=group)
 
-        users = []
-        for group_user in group_users:
-            users.append(User.objects.get(id=group_user.user.id))
+        users = [group_member.user for group_member in group_members]
 
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
