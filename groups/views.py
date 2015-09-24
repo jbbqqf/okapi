@@ -6,6 +6,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.decorators import detail_route, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from common.permissions import IsAdminOrReadOnly
 from groups.serializers import GroupSerializer, GroupUserSerializer
@@ -14,7 +15,7 @@ from groups.models import Group, GroupUser
 from groups.filters import GroupFilter
 
 @authentication_classes((SessionAuthentication, BasicAuthentication,))
-@permission_classes((IsAdminOrReadOnly,))
+@permission_classes((IsAuthenticatedOrReadOnly, IsAdminOrReadOnly,))
 class GroupViewSet(viewsets.ModelViewSet):
     """
     === This set of groups includes both promotions and clubs ===
@@ -65,7 +66,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 @authentication_classes((SessionAuthentication, BasicAuthentication,))
-@permission_classes((IsAdminOrReadOnly,))
+@permission_classes((IsAuthenticatedOrReadOnly, IsAdminOrReadOnly,))
 class GroupUserViewSet(viewsets.ModelViewSet):
     """
     === Many to many relationship to describe membership ===
