@@ -3,6 +3,16 @@ from django.forms import ModelForm
 from django.contrib.auth.models import User
 
 class Profile(models.Model):
+    """
+    Profiles provide some extra informations about it's user. Those fields are
+    generic and should be enough in a first time. If you want to add other
+    fields (avatar for instance), you should create a new app to avoid breaking
+    retro-compatibility. Or if you do so, make sure it has minor impact on UIs.
+
+    Fields like custom e-mail or mobile have been intentionnaly not provided
+    because it's more likely a manytomany relation.
+    """
+
     GENDER = [
         ('n', 'na'),
         ('m', 'man'),

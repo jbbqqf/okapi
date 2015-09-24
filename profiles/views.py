@@ -59,6 +59,10 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route()
     def groups(self, request, pk=None):
+        """
+        This route allows to request all groups a user belongs to.
+        """
+
         user = self.get_object()
         user_groups = GroupUser.objects.filter(user=user.id)
 
