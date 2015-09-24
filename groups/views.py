@@ -7,6 +7,7 @@ from rest_framework.decorators import detail_route, authentication_classes, perm
 from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, DestroyModelMixin, RetrieveModelMixin
 
 from common.permissions import IsAdminOrReadOnly
 from groups.serializers import GroupSerializer, GroupUserSerializer
@@ -67,7 +68,11 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 @authentication_classes((SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticatedOrReadOnly, IsAdminOrReadOnly,))
-class GroupUserViewSet(viewsets.ModelViewSet):
+class GroupUserViewSet(ListModelMixin,
+                       CreateModelMixin,
+                       RetrieveModelMixin,
+                       DestroyModelMixin,
+                       viewsets.GenericViewSet):
     """
     === Many to many relationship to describe membership ===
 
@@ -79,4 +84,3 @@ class GroupUserViewSet(viewsets.ModelViewSet):
 
     queryset = GroupUser.objects.all()
     serializer_class = GroupUserSerializer
-    http_method_names = ['get', 'post', 'delete', 'head', 'options',]

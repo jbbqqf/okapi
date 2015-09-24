@@ -9,6 +9,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 
 from profiles.filters import ProfileFilter, UserFilter
 from profiles.models import Profile
@@ -70,7 +71,10 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticatedOrReadOnly, IsProfileOwnerOrReadOnly,))
-class ProfileViewSet(viewsets.ModelViewSet):
+class ProfileViewSet(ListModelMixin,
+                     RetrieveModelMixin,
+                     UpdateModelMixin,
+                     viewsets.GenericViewSet):
     """
     === Profiles bring additional informations about users ===
     
@@ -100,7 +104,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    http_method_names = ['get', 'put', 'patch', 'head', 'options',]
     filter_backends = (DjangoFilterBackend, SearchFilter,)
     search_fields = ('nick', 'note',)
     filter_class = ProfileFilter
