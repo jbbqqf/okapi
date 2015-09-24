@@ -56,6 +56,10 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     @detail_route()
     def users(self, request, pk=None):
+        """
+        Allows to request all users a group regroups.
+        """
+
         group = self.get_object()
         group_users = GroupUser.objects.filter(group=group.id)
 

@@ -3,6 +3,16 @@ from django.forms import ModelForm
 from django.contrib.auth.models import User
 
 class Group(models.Model):
+    """
+    Lots of use can be pictured for groups, even if the first goal here is to
+    regroup people by promotion and by club affinity.
+
+    An important thing to notice here is the parent field. Django's ForeignKey
+    constraints do not allow such a field to be empty. Each group should have a
+    parent event if it's not relevant (i.e. top-level groups such as `Fi`). For
+    this reason, a virtual root group should be maintained.
+    """
+
     name = models.CharField(max_length=30)
     url = models.CharField(max_length=100, blank=True)
     mailing = models.CharField(max_length=100, blank=True)
@@ -18,6 +28,11 @@ class GroupForm(ModelForm):
         fields = ['name', 'url', 'mailing', 'description', 'parent']
 
 class GroupUser(models.Model):
+    """
+    This model could be a manytomany field in Group. But since we're working
+    with a rest API it would be less convenient when requesting.
+    """
+
     ROLES = [
         ('u', 'user'),
         ('a', 'admin'),
