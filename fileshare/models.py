@@ -3,20 +3,36 @@ from django.forms import ModelForm
 from django.contrib.auth.models import User
 from groups.models import Group
 
-class File(models.Model):
-    TYPE = [
-        ('f', 'file'),
-        ('d', 'directory'),
-    ]
-
+class Directory(models.Model):
     parent = models.ForeignKey('self', null=True)
     name = models.CharField(max_length=32)
-    creator = models.ForeignKey(User)
-    ownergroup = models.ForeignKey(Group, null=True)
-    type = models.CharField(max_length=1, choices=TYPE, default=TYPE[0][0])
     deleted = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return name
+        if self.parent is None:
+            return '/'
+        else:
+            return '{}{}/'.format(self.parent, self.name)
+
+class DirectoryForm(ModelForm):
+    class Meta:
+        model = Directory
+        fields = ['name', 'parent', 'deleted',]
+
+class File(models.Model):
+    parent = models.ForeignKey(Directory, null=True)
+    name = models.CharField(max_length=32)
+    creator = models.ForeignKey(User)
+    deleted = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return '{}{}'.format(self.parent, self.name)
+
+class FileForm(ModelForm):
+    class Meta:
+        model = File
+        fields = ['name', 'parent', 'creator', 'deleted',]
