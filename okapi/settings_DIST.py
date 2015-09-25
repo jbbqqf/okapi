@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'users',
     'groups',
     'chat',
+    'fileshare',
 )
 
 MIDDLEWARE_CLASSES = (
