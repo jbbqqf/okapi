@@ -1,11 +1,15 @@
 from django.db import models
+from django.core.validators import RegexValidator
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from groups.models import Group
 
+ALPHANUMERIC = RegexValidator(r'^[0-9a-zA-Z _-]*$',
+                              'Use only alphanumeric characters or ` _-`.')
+
 class Directory(models.Model):
     parent = models.ForeignKey('self', null=True)
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32, validators=[ALPHANUMERIC])
     deleted = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -32,7 +36,7 @@ class DirectoryForm(ModelForm):
 
 class File(models.Model):
     parent = models.ForeignKey(Directory, null=True)
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32, validators=[ALPHANUMERIC])
     creator = models.ForeignKey(User)
     deleted = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
