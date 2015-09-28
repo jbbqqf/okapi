@@ -11,10 +11,19 @@ class Directory(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
+        return self.to_absolute()
+
+    def to_absolute(self):
         if self.parent is None:
             return '/'
         else:
-            return '{}{}/'.format(self.parent, self.name)
+            return '{}{}/'.format(self.parent.to_absolute(), self.name)
+
+    def to_relative(self):
+        if self.parent is None:
+            return ''
+        else:
+            return '{}{}/'.format(self.parent.to_relative(), self.name)
 
 class DirectoryForm(ModelForm):
     class Meta:
