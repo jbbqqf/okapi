@@ -1,6 +1,7 @@
 from os.path import join
 from os import makedirs
 
+from django.db import transaction
 from django.shortcuts import render
 from django.conf import settings
 
@@ -34,10 +35,16 @@ class DirectoryViewSet(viewsets.ModelViewSet):
         serializer = DirectorySerializer(data=request.data)
 
         if serializer.is_valid():
-            new_dir = serializer.save()
-            makedirs(join(settings.MEDIA_ROOT,
-                          'fileshare',
-                          new_dir.to_relative()))
+            try:
+                with transaction.atomic():
+                    new_dir = serializer.save()
+                    makedirs(join(settings.MEDIA_ROOT,
+                                  'fileshare',
+                                  new_dir.to_relative()))
+            except OSError as e:
+                error = {'message': 'Server could not create directory'}
+                return Response(error,
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response(serializer.data)
 
         else:
