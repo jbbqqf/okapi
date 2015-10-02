@@ -79,6 +79,17 @@ class DirectoryViewSet(viewsets.GenericViewSet,
 
         except OSError as e:
             error = {'message': 'Server could not create directory'}
-            return Response(error,
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.data)
+
+    def destroy(self, request, pk=None):
+        dir = self.get_object()
+        dir_childs = Directory.objects.filter(parent=dir)
+        file_childs = File.objects.filter(parent=dir)
+
+        if dir_childs.is_empty() and file_childs.is_empty():
+            dir.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            error = {'message': 'Cannot DELETE a directory which has childs'}
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
