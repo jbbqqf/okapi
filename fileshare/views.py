@@ -1,6 +1,5 @@
 from os.path import join, isdir
-from os import makedirs, rename
-from shutil import move
+from os import makedirs, rmdir
 
 from django.db import transaction
 from django.shortcuts import render
@@ -11,9 +10,13 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from fileshare.models import File, Directory
 from fileshare.serializers import FileSerializer, DirectorySerializer
+from fileshare.permissions import IsFileOwnerOrAdminOrReadOnly
 from fileshare.filters import FileFilter, DirectoryFilter
 from common.common import cmd
 
@@ -27,6 +30,8 @@ class FileViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
+@authentication_classes((SessionAuthentication, BasicAuthentication,))
+@permission_classes((IsAuthenticatedOrReadOnly,))
 class DirectoryViewSet(viewsets.GenericViewSet,
                        ListModelMixin,
                        RetrieveModelMixin):
@@ -84,12 +89,26 @@ class DirectoryViewSet(viewsets.GenericViewSet,
 
     def destroy(self, request, pk=None):
         dir = self.get_object()
-        dir_childs = Directory.objects.filter(parent=dir)
-        file_childs = File.objects.filter(parent=dir)
+        dir_childs = Directory.objects.filter(parent=dir).exists()
+        file_childs = File.objects.filter(parent=dir).exists()
 
-        if dir_childs.is_empty() and file_childs.is_empty():
-            dir.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
+        if (dir_childs or file_childs) is True:
             error = {'message': 'Cannot DELETE a directory which has childs'}
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            with transaction.atomic():
+                # FileShare Root
+                fsr = join(settings.MEDIA_ROOT, 'fileshare')
+
+                dir.delete()
+                rmdir(join(fsr, dir.to_relative()))
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except OSError as e:
+            msg = 'Could not remove directory{}'.format(dir.to_absolute())
+            error = {'message': msg}
+            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        error = {'message': 'Unknown server error. Please report to an admin.'}
+        return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
