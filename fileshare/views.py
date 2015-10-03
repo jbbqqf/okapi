@@ -51,10 +51,12 @@ class DirectoryViewSet(viewsets.GenericViewSet,
                     makedirs(join(settings.MEDIA_ROOT,
                                   'fileshare',
                                   new_dir.to_relative()))
+
             except OSError as e:
                 error = {'message': 'Server could not create directory'}
                 return Response(error,
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
             return Response(serializer.data)
 
         else:
@@ -89,6 +91,11 @@ class DirectoryViewSet(viewsets.GenericViewSet,
 
     def destroy(self, request, pk=None):
         dir = self.get_object()
+
+        if dir.parent is None:
+            error = {'message': 'Don\'t DELETE root directory you hacker :o'}
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+
         dir_childs = Directory.objects.filter(parent=dir).exists()
         file_childs = File.objects.filter(parent=dir).exists()
 

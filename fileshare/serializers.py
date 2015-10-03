@@ -17,6 +17,10 @@ class DirectorySerializer(serializers.ModelSerializer):
         name = data['name']
         parent = data['parent']
 
+        if parent is None:
+            error = {'message': 'Parent field can\'t be None'}
+            raise serializers.ValidationError(error)
+
         same_level_dirs = Directory.objects.filter(parent=parent)
         for same_level_dir in same_level_dirs:
             if same_level_dir.name == name:
