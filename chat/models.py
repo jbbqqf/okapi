@@ -7,10 +7,17 @@ from profiles.models import User
 from groups.models import Group
 
 class Channel(models.Model):
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32, unique=True)
     public = models.BooleanField(default=True)
     active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        if self.public:
+            visibility = 'Public'
+        else:
+            visibility = 'Private'
+        return '{} channel `{}`'.format(visibility, self.name)
 
 class ChannelForm(ModelForm):
     class Meta:
@@ -32,6 +39,14 @@ class ChannelMember(models.Model):
     class Meta:
         unique_together = (('user', 'channel'),)
 
+    def __unicode__(self):
+        permissions = 'unknown perm'
+        for perm_stored, perm_title in self.PERMS:
+            if perm_stored == self.permissions:
+                permissions = perm_title
+        return '{} can {} in {}'.format(self.user, permissions,
+                                        self.channel)
+
 class ChannelMemberForm(ModelForm):
     class Meta:
         model = ChannelMember
@@ -51,6 +66,14 @@ class ChannelGroup(models.Model):
     
     class Meta:
         unique_together = (('group', 'channel'),)
+
+    def __unicode__(self):
+        permissions = 'unknown perm'
+        for perm_stored, perm_title in self.PERMS:
+            if perm_stored == self.permissions:
+                permissions = perm_title
+        return 'Group {} can {} in {}'.format(self.group, permissions,
+                                              self.channel)
 
 class ChannelGroupForm(ModelForm):
     class Meta:
