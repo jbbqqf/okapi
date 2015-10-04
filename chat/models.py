@@ -98,11 +98,12 @@ class Post(models.Model):
     author = models.ForeignKey(User)
     type = models.CharField(max_length=1, choices=TYPE, default=TYPE[0][0])
     content = models.CharField(max_length=512)
+    channel = models.ForeignKey(Channel)
 
     def __unicode__(self):
-        return u'{}: {}'.format(self.author, self.content)
+        return u'[{}] {}: {}'.format(self.channel, self.author, self.content)
 
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ['author', 'type', 'content']
+        fields = ['author', 'type', 'content', 'channel',]
