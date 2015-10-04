@@ -3,6 +3,60 @@ from django.forms import ModelForm
 
 from django.contrib.auth.models import User
 
+from profiles.models import User
+from groups.models import Group
+
+class Channel(models.Model):
+    name = models.CharField(max_length=32)
+    public = models.BooleanField(default=True)
+    active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+class ChannelForm(ModelForm):
+    class Meta:
+        model = Channel
+        fields = ['name', 'public',]
+
+class ChannelMember(models.Model):
+    PERMS = [
+        ('r', 'read'),
+        ('w', 'write'),
+        ('a', 'admin'),
+    ]
+
+    user = models.ForeignKey(User)
+    channel = models.ForeignKey(Channel)
+    permissions = models.CharField(max_length=1, choices=PERMS,
+                                   default=PERMS[1][0])
+
+    class Meta:
+        unique_together = (('user', 'channel'),)
+
+class ChannelMemberForm(ModelForm):
+    class Meta:
+        model = ChannelMember
+        fields = ['user', 'channel', 'permissions',]
+
+class ChannelGroup(models.Model):
+    PERMS = [
+        ('r', 'read'),
+        ('w', 'write'),
+        ('a', 'admin'),
+    ]
+
+    group = models.ForeignKey(Group)
+    channel = models.ForeignKey(Channel)
+    permissions = models.CharField(max_length=1, choices=PERMS,
+                                   default=PERMS[1][0])
+    
+    class Meta:
+        unique_together = (('group', 'channel'),)
+
+class ChannelGroupForm(ModelForm):
+    class Meta:
+        model = ChannelGroup
+        fields = ['group', 'channel', 'permissions',]
+
 class Post(models.Model):
     """
     Basically the only thing you need for a chat application.
