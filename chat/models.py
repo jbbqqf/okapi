@@ -7,6 +7,15 @@ from profiles.models import User
 from groups.models import Group
 
 class Channel(models.Model):
+    """
+    One major criticism of karibou was the single chat instance. People could
+    not have private conversations in groups. This Channel model allows not
+    only this but could also replace flashmails.
+
+    All promos and all clubs should have their default channel, and a super
+    default channel should always be available for everyone.
+    """
+
     name = models.CharField(max_length=32, unique=True)
     public = models.BooleanField(default=True)
     active = models.BooleanField(default=True)
@@ -25,6 +34,13 @@ class ChannelForm(ModelForm):
         fields = ['name', 'public',]
 
 class ChannelMember(models.Model):
+    """
+    It could be a manytomany field... but read groups.GroupUser for more infos.
+    """
+
+    # read: you can read what people say but cannot spam them
+    # write: default permission allowing to read/write on channel
+    # admin: write permissions + can add/remove users/groups
     PERMS = [
         ('r', 'read'),
         ('w', 'write'),
@@ -53,6 +69,15 @@ class ChannelMemberForm(ModelForm):
         fields = ['user', 'channel', 'permissions',]
 
 class ChannelGroup(models.Model):
+    """
+    It could be a manytomany field... but read groups.GroupUser for more infos.
+    """
+
+    # read: all group members can read what people say but cannot spam them
+    # write: default permission, all group members can read/write on channel
+    # admin: write permissions + can add/remove users/groups for all group
+    #        members (but you should only give users admin permissions since
+    #        you don't know who will join this group)
     PERMS = [
         ('r', 'read'),
         ('w', 'write'),
@@ -82,11 +107,11 @@ class ChannelGroupForm(ModelForm):
 
 class Post(models.Model):
     """
-    Basically the only thing you need for a chat application.
+    Posts are lines of channels.
 
-    Connected users should be able to send `m` posts from the user interface.
-    For any other kind of post that could be displayed to users, only backend
-    through application requests should be allowed create those.
+    Connected users should be able to send only `m` posts from the user
+    interface. For any other kind of post that could be displayed to users,
+    only backend through application requests should be allowed create those.
     """
 
     TYPE = [
