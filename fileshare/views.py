@@ -41,52 +41,48 @@ class DirectoryViewSet(viewsets.GenericViewSet,
     search_fields = ('name',)
     filter_class = DirectoryFilter
 
+    # FileShare application system Root directory
+    fsr = join(settings.MEDIA_ROOT, 'fileshare')
+
     def create(self, request, pk=None):
         serializer = DirectorySerializer(data=request.data)
 
-        if serializer.is_valid():
-            try:
-                with transaction.atomic():
-                    new_dir = serializer.save()
-                    makedirs(join(settings.MEDIA_ROOT,
-                                  'fileshare',
-                                  new_dir.to_relative()))
-
-            except OSError as e:
-                error = {'message': 'Server could not create directory'}
-                return Response(error,
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            return Response(serializer.data)
-
-        else:
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
-
-    def update(self, request, pk=None):
-        src_dir = self.get_object()
-        src_path = src_dir.to_relative()
-        serializer = DirectorySerializer(src_dir, data=request.data)
-        
         serializer.is_valid(raise_exception=True)
+
         try:
             with transaction.atomic():
-                dest_path = serializer.save().to_relative()
-                parent_path = src_dir.parent.to_relative()
+                new_dir = serializer.save()
+                makedirs(join(self.fsr, new_dir.to_relative()))
 
-                # FileShare Root
-                fsr = join(settings.MEDIA_ROOT, 'fileshare')
-                if not isdir(join(fsr, parent_path)):
-                    makedirs(join(fsr, parent_path))
+        except OSError as e:
+            error = {'message': 'Server could not create directory'}
+            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        dir = self.get_object()
+        serializer = DirectorySerializer(dir, data=request.data)
+        
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            with transaction.atomic():
+                dest_dir = serializer.save()
+                parent_path = dir.parent.to_relative()
+
+                if not isdir(join(self.fsr, parent_path)):
+                    makedirs(join(self.fsr, parent_path))
                 
-                abs_src = join(fsr, src_path)
-                abs_dest = join(fsr, dest_path)
+                abs_src = join(self.fsr, dir.to_relative())
+                abs_dest = join(self.fsr, dest_dir.to_relative())
 
                 cmd('mv', abs_src, abs_dest)
 
         except OSError as e:
             error = {'message': 'Server could not create directory'}
             return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return Response(serializer.data)
 
     def destroy(self, request, pk=None):
@@ -105,11 +101,8 @@ class DirectoryViewSet(viewsets.GenericViewSet,
 
         try:
             with transaction.atomic():
-                # FileShare Root
-                fsr = join(settings.MEDIA_ROOT, 'fileshare')
-
                 dir.delete()
-                rmdir(join(fsr, dir.to_relative()))
+                rmdir(join(self.fsr, dir.to_relative()))
                 return Response(status=status.HTTP_204_NO_CONTENT)
 
         except OSError as e:
