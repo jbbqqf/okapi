@@ -39,14 +39,16 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     list:
         parameters:
             - name: search
-              description: contain filter for first_name or last_name (multiple values separated by `,`)
+              description: contain filter for first_name or last_name
+                           (multiple values separated by `,`)
               paramType: query
               type: string
 
     retrieve:
         parameters:
             - name: search
-              description: contain filter for first_name or last_name (multiple values separated by `,`)
+              description: contain filter for first_name or last_name
+                           (multiple values separated by `,`)
               paramType: query
               type: string
     """
@@ -92,14 +94,16 @@ class ProfileViewSet(ListModelMixin,
     list:
         parameters:
             - name: search
-              description: contain filter for nick or note (multiple values separated by `,`)
+              description: contain filter for nick or note (multiple values
+                           separated by `,`)
               paramType: query
               type: string
 
     retrieve:
         parameters:
             - name: search
-              description: contain filter for nick or note (multiple values separated by `,`)
+              description: contain filter for nick or note (multiple values
+                           separated by `,`)
               paramType: query
               type: string
     """

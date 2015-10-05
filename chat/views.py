@@ -23,19 +23,20 @@ class PostViewSet(ListModelMixin,
     === Post objects provides data for a chat application  ===
 
     You can only perform GET or POST requests on post objects if you are
-authenticated. The reason for this is we don't want people from the outside to
-be able to read random cynical, sexist and hyper-sexualized conversations.
+    authenticated. The reason for this is we don't want people from the outside
+    to be able to read random cynical, sexist and hyper-sexualized
+    conversations.
 
     For the moment, the only type of post a connected user can POST are messages
-(`m`). In the future we can imagine games to be accessible from the API and
-score notifications will be displayed as messages.
+    (`m`). In the future we can imagine games to be accessible from the API and
+    score notifications will be displayed as messages.
 
     The only field you need to provide when a user writes a message is its
-content. Current user and current datetime will be recorded in the base but you
-will be able to access those fields only when performing GET requests.
+    content. Current user and current datetime will be recorded in the base but
+    you will be able to access those fields only when performing GET requests.
 
     Posts can not be edited... excepted by admins in the admin interface if
-necessary.
+    necessary.
 
     ---
 
