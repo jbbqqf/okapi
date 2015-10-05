@@ -24,6 +24,7 @@ class Directory(models.Model):
     cannot be edited through API interface.
     """
 
+    # null is allowed only for root directory
     parent = models.ForeignKey('self', null=True)
     name = models.CharField(max_length=32, validators=[ALPHANUMERIC])
     # deleted is not yet implemented but it should allow users to remove a
@@ -67,9 +68,22 @@ class DirectoryForm(ModelForm):
         fields = ['name', 'parent', 'deleted',]
 
 class File(models.Model):
+    """
+    Files in fileshare application map system stored files in the virtual
+    filesystem provided by Directory models.
+
+    File names support only alphanumeric characters and ` `, `_` and `-` (even
+    if posix norm allows some special characters). This File model does record
+    the creator of a directory, which also becomes its owner. Only owners and
+    admins are able to PUT or DELETE a File.
+    """
+
+    # use null only if your file if stored in the root directoy
     parent = models.ForeignKey(Directory, null=True)
     name = models.CharField(max_length=32, validators=[ALPHANUMERIC])
     creator = models.ForeignKey(User)
+    # deleted is not yet implemented but it should allow users to remove a
+    # ressource without being destroyed on server (trashbin functionnality ?)
     deleted = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
