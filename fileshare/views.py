@@ -49,6 +49,22 @@ class DirectoryViewSet(viewsets.GenericViewSet,
     the system encounters a problem (corrupted filesystem, bad permissions...),
     a rollback will be processed for the last database insertion and an error
     500 will be returned.
+
+    ---
+
+    list:
+        parameters:
+            - name: search
+              description: contain filter for name
+              paramType: query
+              type: string
+
+    retrieve:
+        parameters:
+            - name: search
+              description: contain filter for content
+              paramType: query
+              type: string
     """
 
     queryset = Directory.objects.filter(deleted=False)
