@@ -17,10 +17,12 @@ class DirectorySerializer(serializers.ModelSerializer):
         name = data['name']
         parent = data['parent']
 
+        # only `/`, a static Directory, can have parent set to null
         if parent is None:
             error = {'message': 'Parent field can\'t be None'}
             raise serializers.ValidationError(error)
 
+        # it is not allowed to have two identical names
         same_level_dirs = Directory.objects.filter(parent=parent)
         for same_level_dir in same_level_dirs:
             if same_level_dir.name == name:
