@@ -33,17 +33,17 @@ class DirectoryFilter(FilterSet):
                       label='name contain filter')
     parent = NumberFilter(name='parent', label='parent dir id filter')
 
-    cafterlabel = 'filter files uploaded after or on provided date/time'
+    cafterlabel = 'filter dirs uploaded after or on provided date/time'
     created_after = DateTimeFilter(name='created', lookup_type='gte',
                                    label=cafterlabel)
-    cbeforelabel = 'filter files uploaded before or on provided date/time'
+    cbeforelabel = 'filter dirs uploaded before or on provided date/time'
     created_before = DateTimeFilter(name='created', lookup_type='lte',
                                     label=cbeforelabel)
 
-    mafterlabel = 'filter files modified after or on provided date/time'
+    mafterlabel = 'filter dirs modified after or on provided date/time'
     modified_after = DateTimeFilter(name='modified', lookup_type='gte',
                                     label=mafterlabel)
-    mbeforelabel = 'filter files modified before or on provided date/time'
+    mbeforelabel = 'filter dirs modified before or on provided date/time'
     modified_before = DateTimeFilter(name='modified', lookup_type='lte',
                                      label=mbeforelabel)
 
