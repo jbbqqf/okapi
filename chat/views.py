@@ -7,11 +7,83 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
-from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 
 from chat.filters import PostFilter
-from chat.serializers import PostSerializer
-from chat.models import Post
+from chat.serializers import ChannelSerializer, ChannelMemberSerializer, ChannelGroupSerializer, PostSerializer
+from chat.models import Channel, ChannelMember, ChannelGroup, Post
+
+@authentication_classes((SessionAuthentication, BasicAuthentication,))
+@permission_classes((IsAuthenticated,))
+class ChannelView(ListModelMixin,
+                  CreateModelMixin,
+                  RetrieveModelMixin,
+                  DestroyModelMixin,
+                  viewsets.GenericViewSet):
+        """
+        === Allows users to chat on different public or private channel ===
+
+        Channels are supposed to provide mainly a channel by promo and by
+        club group as well as a default public channel.
+
+        Default channel which id is 1 cannot be edited by anyone. Other channel
+        are only visible for members of the channel or members of one group
+        associed to the channel.
+
+        ---
+    
+        list:
+            parameters:
+                - name: search
+                  description: contain filter for name
+                  paramType: query
+                  type: string
+    
+        retrieve:
+            parameters:
+                - name: search
+                  description: contain filter for name
+                  paramType: query
+                  type: string
+        """
+
+        queryset = Channel.objects.all()
+        serializer_class = ChannelSerializer
+        filter_backends = (DjangoFilterBackend, SearchFilter,)
+        search_fields = ('name',)
+        # TODO: filter_class = ChannelFilter
+
+@authentication_classes((SessionAuthentication, BasicAuthentication,))
+@permission_classes((IsAuthenticated,))
+class ChannelMemberView(ListModelMixin,
+                        CreateModelMixin,
+                        RetrieveModelMixin,
+                        DestroyModelMixin,
+                        viewsets.GenericViewSet):
+        """
+        === Many to many relationship for user based channels ===
+
+        Only admins or channel owners are allowed to POST or DELETE entries.
+        """
+
+        queryset = ChannelMember.objects.all()
+        serializer_class = ChannelMemberSerializer
+
+@authentication_classes((SessionAuthentication, BasicAuthentication,))
+@permission_classes((IsAuthenticated,))
+class ChannelGroupView(ListModelMixin,
+                       CreateModelMixin,
+                       RetrieveModelMixin,
+                       DestroyModelMixin,
+                       viewsets.GenericViewSet):
+        """
+        === Many to many relationship for group based channels ===
+
+        Only admins or channel owners are allowed to POST or DELETE entries.
+        """
+
+        queryset = ChannelGroup.objects.all()
+        serializer_class = ChannelGroupSerializer
 
 @authentication_classes((SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))
