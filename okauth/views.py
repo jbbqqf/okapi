@@ -6,15 +6,16 @@ from rest_framework.authtoken.models import Token
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.decorators import permission_classes
 
 from okauth.serializers import LoginSerializer, TokenSerializer
 
+@permission_classes((AllowAny,))
 class LoginView(GenericAPIView):
     """
     === API endpoint to log in django users with django sessions ===
     """
 
-    permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
 
     def post(self, request):
@@ -34,6 +35,7 @@ class LoginView(GenericAPIView):
         }
         return Response(response_data)
 
+@permission_classes((AllowAny,))
 class LogoutView(APIView):
     """
     === API endpoint to log out django users and destroy django sessions ===
@@ -44,8 +46,6 @@ class LogoutView(APIView):
 
     If no user is loged response is a 400 bad request.
     """
-
-    permission_classes = (AllowAny,)
 
     def post(self, request):
         try:
