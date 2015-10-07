@@ -21,7 +21,6 @@ import profiles.views
 import groups.views
 import chat.views
 import fileshare.views
-import okauth.views
 
 router = routers.DefaultRouter()
 router.register(r'users', profiles.views.UserViewSet)
@@ -34,7 +33,7 @@ router.register(r'directories', fileshare.views.DirectoryViewSet)
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^okauth/', okauth.views.LoginView.as_view(), name='login'),
+    url(r'^okauth/', include('okauth.urls')),
     url(r'^', include(router.urls)),
     url(r'^docs/', include('rest_framework_swagger.urls')),
 ]
