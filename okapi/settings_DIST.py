@@ -38,13 +38,16 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_swagger',
     'corsheaders',
     'common',
+    'profiles',
     'users',
     'groups',
     'chat',
     'fileshare',
+    'okauth',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -113,6 +116,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = '/home/apps/okapi/www/media'
 
 # REST framework custom settings
 REST_FRAMEWORK = {
