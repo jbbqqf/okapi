@@ -56,3 +56,25 @@ class GroupUserForm(ModelForm):
     class Meta:
         model = GroupUser
         fields = ['user', 'group', 'role']
+
+
+def get_group_members(group):
+    """
+    Search in manytomany relationship GroupUser model for users belonging to
+    a group given as argument. Return a list of users or an empty list.
+    """
+
+    matches = GroupUser.objects.filter(group=group)
+    members = [member.user for member in matches]
+    return members
+
+
+def get_user_groups(user):
+    """
+    Search in manytomany relationship GroupUser model for groups a user given
+    as argument belongs to. Return a list of groups or an empty list.
+    """
+
+    matches = GroupUser.objects.filter(user=user)
+    groups = [match.group for match in matches]
+    return groups

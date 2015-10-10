@@ -15,7 +15,7 @@ from profiles.filters import ProfileFilter, UserFilter
 from profiles.models import Profile
 from profiles.serializers import ProfileSerializer, UserSerializer
 from profiles.permissions import IsProfileOwnerOrReadOnly
-from groups.models import Group, GroupUser
+from groups.models import Group, GroupUser, get_user_groups
 from groups.serializers import GroupSerializer
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -66,10 +66,9 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         """
 
         user = self.get_object()
-        user_groups = GroupUser.objects.filter(user=user)
 
-        groups = [user_group.group for user_group in user_groups]
-
+        groups = get_user_groups(user)
+        
         serializer = GroupSerializer(groups, many=True)
         return Response(serializer.data)
 

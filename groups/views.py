@@ -12,7 +12,7 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, DestroyModel
 from common.permissions import IsAdminOrReadOnly
 from groups.serializers import GroupSerializer, GroupUserSerializer
 from profiles.serializers import UserSerializer
-from groups.models import Group, GroupUser
+from groups.models import Group, GroupUser, get_group_members
 from groups.filters import GroupFilter
 
 @authentication_classes((SessionAuthentication, BasicAuthentication,))
@@ -61,9 +61,8 @@ class GroupViewSet(viewsets.ModelViewSet):
         """
 
         group = self.get_object()
-        group_members = GroupUser.objects.filter(group=group)
 
-        users = [group_member.user for group_member in group_members]
+        users = get_group_members(group)
 
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
