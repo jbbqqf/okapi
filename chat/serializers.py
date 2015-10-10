@@ -6,7 +6,7 @@ from chat.models import Channel, ChannelMember, ChannelGroup, Post
 class ChannelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Channel
-        fields = ['name', 'public', 'active',]
+        fields = ['id', 'name', 'public', 'active',]
 
 class ChannelMemberSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,4 +21,4 @@ class ChannelGroupSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        read_only_fields = ('author', 'type',)
+        read_only_fields = ['author', 'type',]
