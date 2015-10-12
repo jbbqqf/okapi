@@ -12,8 +12,17 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, DestroyModel
 from common.permissions import IsAdminOrReadOnly
 from groups.serializers import GroupSerializer, GroupUserSerializer
 from profiles.serializers import UserSerializer
-from groups.models import Group, GroupUser, get_group_members
+from groups.models import Group, GroupUser, okaGroup, get_group_members
 from groups.filters import GroupFilter
+
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticatedOrReadOnly, IsAdminOrReadOnly,))
+class okaGroupViewSet(viewsets.ModelViewSet):
+    queryset = okaGroup.objects.all()
+    serializer_class = okaGroupSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter,)
+    search_fields = ['name', 'url', 'mailing', 'description',]
+    # TODO: filter_class = okaGroupFilter
 
 @authentication_classes((SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticatedOrReadOnly, IsAdminOrReadOnly,))

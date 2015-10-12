@@ -1,6 +1,21 @@
 from django.db import models
 from django.forms import ModelForm
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group as djaGroup
+
+class okaGroup(djaGroup):
+    url = models.CharField(max_length=100, blank=True)
+    mailing = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
+    parent = models.ForeignKey('self')
+
+    def __unicode__(self):
+        return self.name
+
+class okaGroupForm(ModelForm):
+    class Meta:
+        model = okaGroup
+        fields = ['name', 'url', 'mailing', 'description', 'parent',]
 
 class Group(models.Model):
     """
