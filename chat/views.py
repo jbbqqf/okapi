@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
@@ -13,7 +13,7 @@ from chat.filters import PostFilter
 from chat.serializers import ChannelSerializer, ChannelMemberSerializer, ChannelGroupSerializer, PostSerializer
 from chat.models import Channel, ChannelMember, ChannelGroup, Post
 
-@authentication_classes((SessionAuthentication, BasicAuthentication,))
+@authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))
 class ChannelView(ListModelMixin,
                   CreateModelMixin,
@@ -85,7 +85,7 @@ class ChannelGroupView(ListModelMixin,
         queryset = ChannelGroup.objects.all()
         serializer_class = ChannelGroupSerializer
 
-@authentication_classes((SessionAuthentication, BasicAuthentication,))
+@authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))
 class PostViewSet(ListModelMixin,
                   CreateModelMixin,
