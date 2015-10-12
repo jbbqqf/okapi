@@ -28,6 +28,13 @@ class Channel(models.Model):
             visibility = 'Private'
         return '{} channel `{}`'.format(visibility, self.name)
 
+    class Meta:
+        permissions = (
+            ('read_channel', 'Read Channel'),
+            ('write_channel', 'Write Channel'),
+            ('admin_channel', 'Admin Channel'),
+        )
+
 class ChannelForm(ModelForm):
     class Meta:
         model = Channel
@@ -132,3 +139,37 @@ class PostForm(ModelForm):
     class Meta:
         model = Post
         fields = ['author', 'type', 'content', 'channel',]
+
+
+def get_channel_groups(channel):
+    """
+    Search in manytomany relationship ChannelGroup model for groups a channel
+    given as argument belongs to. Return a list of tuples with groups and their
+    permissions or an empty list.
+    Example: [(<Group1>, 'r'), (<Group2>, 'a')]
+    """
+    
+    matches = ChannelGroup.objects.filter(channel=channel)
+
+    groups = []
+    for match in matches:
+        groups.append((match.group, match.permissions))
+
+    return groups
+
+
+def get_channel_members(channel):
+    """
+    Search in manytomany relationship ChannelMember model for members a channel
+    given as argument belongs to. Return a list of tuples with users and their
+    permissions or an empty list.
+    Example: [(<User1>, 'r'), (<User2>, 'a')]
+    """
+    
+    matches = ChannelMember.objects.filter(channel=channel)
+
+    users = []
+    for match in matches:
+        users.append((match.user, match.permissions))
+
+    return users
