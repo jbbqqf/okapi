@@ -5,8 +5,9 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, authentication_classes
 
 from okauth.serializers import LoginSerializer, TokenSerializer
 
@@ -49,9 +50,20 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            request.user.auth_token.delete()
+            auth_headers = request.META.get('HTTP_AUTHORIZATION')
+            auth_token = auth_headers.split(' ')
+            assert (auth_token[0] == 'Token'), \
+                "Token should be announced with a `Token ` string"
         except:
-            message = {'message': 'No user is loged'}
+            message = {'message': 'No token supplied'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            token = Token.objects.get(key=auth_token[1])
+            token.delete()
+        except:
+            message = {'message':
+                'Could not delete supplied token. Check your supplied data.'}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
         logout(request)
