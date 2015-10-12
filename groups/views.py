@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 
 from rest_framework import viewsets
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import detail_route, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, DestroyModelMixin, RetrieveModelMixin
 
 from common.permissions import IsAdminOrReadOnly
-from groups.serializers import GroupSerializer, GroupUserSerializer
+from groups.serializers import GroupSerializer, GroupUserSerializer, okaGroupSerializer
 from profiles.serializers import UserSerializer
 from groups.models import Group, GroupUser, okaGroup, get_group_members
 from groups.filters import GroupFilter
