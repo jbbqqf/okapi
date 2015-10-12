@@ -15,7 +15,7 @@ from profiles.serializers import UserSerializer
 from groups.models import Group, GroupUser, okaGroup, get_group_members
 from groups.filters import GroupFilter
 
-@authentication_classes((TokenAuthentication,))
+@authentication_classes((TokenAuthentication, SessionAuthentication))
 @permission_classes((IsAuthenticatedOrReadOnly, IsAdminOrReadOnly,))
 class okaGroupViewSet(viewsets.ModelViewSet):
     queryset = okaGroup.objects.all()
