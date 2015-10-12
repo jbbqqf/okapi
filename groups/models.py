@@ -7,7 +7,7 @@ class okaGroup(djaGroup):
     url = models.CharField(max_length=100, blank=True)
     mailing = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
-    parent = models.ForeignKey('self')
+    parent = models.ForeignKey('self', null=True)
 
     def __unicode__(self):
         return self.name
