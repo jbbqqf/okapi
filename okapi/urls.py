@@ -30,8 +30,6 @@ router.register(r'groups', groups.views.GroupViewSet)
 router.register(r'groupmembers', groups.views.GroupUserViewSet)
 router.register(r'posts', chat.views.PostViewSet)
 router.register(r'channels', chat.views.ChannelView, base_name='channels')
-router.register(r'channelmembers', chat.views.ChannelMemberView)
-router.register(r'channelgroups', chat.views.ChannelGroupView)
 router.register(r'files', fileshare.views.FileViewSet)
 router.register(r'directories', fileshare.views.DirectoryViewSet)
 

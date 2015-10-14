@@ -29,6 +29,9 @@ class Channel(models.Model):
         return '{} channel `{}`'.format(visibility, self.name)
 
     class Meta:
+        # read: you can read what people say but cannot spam them
+        # write: default permission allowing to read/write on channel
+        # admin: write permissions + can add/remove users/groups
         permissions = (
             ('read_channel', 'Read Channel'),
             ('write_channel', 'Write Channel'),
@@ -39,78 +42,6 @@ class ChannelForm(ModelForm):
     class Meta:
         model = Channel
         fields = ['name', 'public',]
-
-class ChannelMember(models.Model):
-    """
-    It could be a manytomany field... but read groups.GroupUser for more infos.
-    """
-
-    # read: you can read what people say but cannot spam them
-    # write: default permission allowing to read/write on channel
-    # admin: write permissions + can add/remove users/groups
-    PERMS = [
-        ('r', 'read'),
-        ('w', 'write'),
-        ('a', 'admin'),
-    ]
-
-    user = models.ForeignKey(User)
-    channel = models.ForeignKey(Channel)
-    permissions = models.CharField(max_length=1, choices=PERMS,
-                                   default=PERMS[1][0])
-
-    class Meta:
-        unique_together = (('user', 'channel'),)
-
-    def __unicode__(self):
-        permissions = 'unknown perm'
-        for perm_stored, perm_title in self.PERMS:
-            if perm_stored == self.permissions:
-                permissions = perm_title
-        return '{} can {} in {}'.format(self.user, permissions,
-                                        self.channel)
-
-class ChannelMemberForm(ModelForm):
-    class Meta:
-        model = ChannelMember
-        fields = ['user', 'channel', 'permissions',]
-
-class ChannelGroup(models.Model):
-    """
-    It could be a manytomany field... but read groups.GroupUser for more infos.
-    """
-
-    # read: all group members can read what people say but cannot spam them
-    # write: default permission, all group members can read/write on channel
-    # admin: write permissions + can add/remove users/groups for all group
-    #        members (but you should only give users admin permissions since
-    #        you don't know who will join this group)
-    PERMS = [
-        ('r', 'read'),
-        ('w', 'write'),
-        ('a', 'admin'),
-    ]
-
-    group = models.ForeignKey(Group)
-    channel = models.ForeignKey(Channel)
-    permissions = models.CharField(max_length=1, choices=PERMS,
-                                   default=PERMS[1][0])
-    
-    class Meta:
-        unique_together = (('group', 'channel'),)
-
-    def __unicode__(self):
-        permissions = 'unknown perm'
-        for perm_stored, perm_title in self.PERMS:
-            if perm_stored == self.permissions:
-                permissions = perm_title
-        return 'Group {} can {} in {}'.format(self.group, permissions,
-                                              self.channel)
-
-class ChannelGroupForm(ModelForm):
-    class Meta:
-        model = ChannelGroup
-        fields = ['group', 'channel', 'permissions',]
 
 class Post(models.Model):
     """
@@ -139,37 +70,3 @@ class PostForm(ModelForm):
     class Meta:
         model = Post
         fields = ['author', 'type', 'content', 'channel',]
-
-
-def get_channel_groups(channel):
-    """
-    Search in manytomany relationship ChannelGroup model for groups a channel
-    given as argument belongs to. Return a list of tuples with groups and their
-    permissions or an empty list.
-    Example: [(<Group1>, 'r'), (<Group2>, 'a')]
-    """
-    
-    matches = ChannelGroup.objects.filter(channel=channel)
-
-    groups = []
-    for match in matches:
-        groups.append((match.group, match.permissions))
-
-    return groups
-
-
-def get_channel_members(channel):
-    """
-    Search in manytomany relationship ChannelMember model for members a channel
-    given as argument belongs to. Return a list of tuples with users and their
-    permissions or an empty list.
-    Example: [(<User1>, 'r'), (<User2>, 'a')]
-    """
-    
-    matches = ChannelMember.objects.filter(channel=channel)
-
-    users = []
-    for match in matches:
-        users.append((match.user, match.permissions))
-
-    return users

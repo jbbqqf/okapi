@@ -1,6 +1,8 @@
 from django.shortcuts import render
 
 from rest_framework import viewsets
+from rest_framework.generics import GenericAPIView
+from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes
@@ -9,9 +11,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 
+from guardian.shortcuts import get_users_with_perms, get_groups_with_perms
+
 from chat.filters import PostFilter, ReadablePostFilter
-from chat.serializers import ChannelSerializer, ChannelMemberSerializer, ChannelGroupSerializer, PostSerializer
-from chat.models import Channel, ChannelMember, ChannelGroup, Post
+from chat.serializers import ChannelSerializer, PostSerializer
+from chat.models import Channel, Post
 from chat.permissions import IsChannelMember
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
@@ -54,37 +58,43 @@ class ChannelView(ListModelMixin,
         search_fields = ('name',)
         # TODO: filter_class = ChannelFilter
 
-@authentication_classes((SessionAuthentication, BasicAuthentication,))
-@permission_classes((IsAuthenticated,))
-class ChannelMemberView(ListModelMixin,
-                        CreateModelMixin,
-                        RetrieveModelMixin,
-                        DestroyModelMixin,
-                        viewsets.GenericViewSet):
-        """
-        === Many to many relationship for user based channels ===
+# @authentication_classes((SessionAuthentication, BasicAuthentication,))
+# @permission_classes((IsAuthenticated,))
+# class ChannelMemberView(APIView):
+#         """
+#         === Many to many relationship for user based channels ===
+# 
+#         Only admins or channel owners are allowed to POST or DELETE entries.
+#         """
+# 
+#         # queryset = None
+#         # serializer_class = ChannelMemberSerializer
+# 
+#         def retrieve(self, request, pk=None):    
+#             channel = self.get_object()
+#             perms = get_users_with_perm(channel, attach_perms=True)
+#             return Response(perms)
 
-        Only admins or channel owners are allowed to POST or DELETE entries.
-        """
-
-        queryset = ChannelMember.objects.all()
-        serializer_class = ChannelMemberSerializer
-
-@authentication_classes((SessionAuthentication, BasicAuthentication,))
-@permission_classes((IsAuthenticated,))
-class ChannelGroupView(ListModelMixin,
-                       CreateModelMixin,
-                       RetrieveModelMixin,
-                       DestroyModelMixin,
-                       viewsets.GenericViewSet):
-        """
-        === Many to many relationship for group based channels ===
-
-        Only admins or channel owners are allowed to POST or DELETE entries.
-        """
-
-        queryset = ChannelGroup.objects.all()
-        serializer_class = ChannelGroupSerializer
+# @authentication_classes((SessionAuthentication, BasicAuthentication,))
+# @permission_classes((IsAuthenticated,))
+# class ChannelGroupView(ListModelMixin,
+#                        CreateModelMixin,
+#                        RetrieveModelMixin,
+#                        DestroyModelMixin,
+#                        viewsets.GenericViewSet):
+#         """
+#         === Many to many relationship for group based channels ===
+# 
+#         Only admins or channel owners are allowed to POST or DELETE entries.
+#         """
+# 
+#         queryset = None
+#         serializer_class = ChannelGroupSerializer
+# 
+#         def retrieve(self, request, pk=None):
+#             channel = self.get_object()
+#             perms = get_groups_with_perm(channel, attach_perms=True)
+#             return Response(perms)
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))
