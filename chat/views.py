@@ -16,7 +16,6 @@ from guardian.shortcuts import get_users_with_perms, get_groups_with_perms
 from chat.filters import PostFilter, ReadablePostFilter
 from chat.serializers import ChannelSerializer, PostSerializer
 from chat.models import Channel, Post
-from chat.permissions import IsChannelMember
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))#IsChannelMember,))
