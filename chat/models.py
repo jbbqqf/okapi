@@ -4,7 +4,6 @@ from django.forms import ModelForm
 from django.contrib.auth.models import User
 
 from profiles.models import User
-from groups.models import Group
 
 class Channel(models.Model):
     """

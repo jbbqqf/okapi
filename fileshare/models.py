@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.forms import ModelForm
 from django.contrib.auth.models import User
-from groups.models import Group
 
 ALPHANUMERIC = RegexValidator(r'^[0-9a-zA-Z _-]*$',
                               'Use only alphanumeric characters or ` _-`.')
