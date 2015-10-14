@@ -9,12 +9,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 
-from chat.filters import PostFilter
+from chat.filters import PostFilter, ReadablePostFilter
 from chat.serializers import ChannelSerializer, ChannelMemberSerializer, ChannelGroupSerializer, PostSerializer
 from chat.models import Channel, ChannelMember, ChannelGroup, Post
+from chat.permissions import IsChannelMember
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,))#IsChannelMember,))
 class ChannelView(ListModelMixin,
                   CreateModelMixin,
                   RetrieveModelMixin,
@@ -129,7 +130,7 @@ class PostViewSet(ListModelMixin,
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter,)
+    filter_backends = (ReadablePostFilter, DjangoFilterBackend, SearchFilter,)
     search_fields = ('content',)
     filter_class = PostFilter
 
