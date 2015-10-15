@@ -23,197 +23,197 @@ from groups.models import Group
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))#IsChannelMember,))
 class ChannelView(ListModelMixin,
-                  CreateModelMixin,
-                  RetrieveModelMixin,
-                  DestroyModelMixin,
-                  viewsets.GenericViewSet):
-        """
-        === Allows users to chat on different public or private channel ===
+              CreateModelMixin,
+              RetrieveModelMixin,
+              DestroyModelMixin,
+              viewsets.GenericViewSet):
+    """
+    === Allows users to chat on different public or private channel ===
 
-        Channels are supposed to provide mainly a channel by promo and by
-        club group as well as a default public channel.
+    Channels are supposed to provide mainly a channel by promo and by
+    club group as well as a default public channel.
 
-        Default channel which id is 1 cannot be edited by anyone. Other channel
-        are only visible for members of the channel or members of one group
-        associed to the channel.
+    Default channel which id is 1 cannot be edited by anyone. Other channel
+    are only visible for members of the channel or members of one group
+    associed to the channel.
 
-        ---
-    
-        list:
-            parameters:
-                - name: search
-                  description: contain filter for name
-                  paramType: query
-                  type: string
-    
-        retrieve:
-            parameters:
-                - name: search
-                  description: contain filter for name
-                  paramType: query
-                  type: string
-        """
+    ---
 
-        queryset = Channel.objects.all()
-        serializer_class = ChannelSerializer
-        filter_backends = (DjangoFilterBackend, SearchFilter,)
-        search_fields = ('name',)
-        # TODO: filter_class = ChannelFilter
+    list:
+        parameters:
+            - name: search
+              description: contain filter for name
+              paramType: query
+              type: string
 
-        @detail_route()
-        def userperms(self, request, pk=None):
-            channel = self.get_object()
-            perms = get_users_with_perms(channel, attach_perms=True)
+    retrieve:
+        parameters:
+            - name: search
+              description: contain filter for name
+              paramType: query
+              type: string
+    """
 
-            serialized_perms = []
-            for user, perm in perms.items():
-                temp_perm = {}
-                temp_perm['user'] = user.id
-                temp_perm['permissions'] = perm
-                serialized_perms.append(temp_perm)
-            
-            return Response(serialized_perms)
+    queryset = Channel.objects.all()
+    serializer_class = ChannelSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter,)
+    search_fields = ('name',)
+    # TODO: filter_class = ChannelFilter
 
-        @detail_route()
-        def myperms(self, request, pk=None):
-            channel = self.get_object()
-            me = request.user
+    @detail_route()
+    def userperms(self, request, pk=None):
+        channel = self.get_object()
+        perms = get_users_with_perms(channel, attach_perms=True)
 
-            permissions = {}
-            for perm in ['read_channel', 'write_channel', 'admin_channel']:
-                permissions[perm] = me.has_perm(perm, channel)
+        serialized_perms = []
+        for user, perm in perms.items():
+            temp_perm = {}
+            temp_perm['user'] = user.id
+            temp_perm['permissions'] = perm
+            serialized_perms.append(temp_perm)
+        
+        return Response(serialized_perms)
 
-            return Response(permissions)
+    @detail_route()
+    def myperms(self, request, pk=None):
+        channel = self.get_object()
+        me = request.user
 
-        @detail_route(methods=['post'])
-        def adduser(self, request, pk=None):
-            channel = self.get_object()
+        permissions = {}
+        for perm in ['read_channel', 'write_channel', 'admin_channel']:
+            permissions[perm] = me.has_perm(perm, channel)
 
-            serializer = ChannelMemberSerializer(data=request.data) 
-            serializer.is_valid(raise_exception=True)
+        return Response(permissions)
 
-            user_id = serializer.data['user']
-            user = User.objects.get(pk=user_id)
-            permission = serializer.data['permissions']
+    @detail_route(methods=['post'])
+    def adduser(self, request, pk=None):
+        channel = self.get_object()
 
-            # To avoid mistakes if a user is granted write rights, it's also
-            # true for read ones. Well this is discutable...
-            if permission == 'write_channel':
-                assign_perm('read_channel', user, channel)
+        serializer = ChannelMemberSerializer(data=request.data) 
+        serializer.is_valid(raise_exception=True)
 
-            # Same thing for admin rights toward write and read ones
-            if permission == 'admin_channel':
-                assign_perm('read_channel', user, channel)
-                assign_perm('write_channel', user, channel)
+        user_id = serializer.data['user']
+        user = User.objects.get(pk=user_id)
+        permission = serializer.data['permissions']
 
-            # In the end of the process we give the user his supplied rights
-            assign_perm(permission, user, channel)
+        # To avoid mistakes if a user is granted write rights, it's also
+        # true for read ones. Well this is discutable...
+        if permission == 'write_channel':
+            assign_perm('read_channel', user, channel)
 
-            message = {
-                'message':
-                'User {} can {} {}'.format(user, permission, channel)
-            }
-            return Response(message)
+        # Same thing for admin rights toward write and read ones
+        if permission == 'admin_channel':
+            assign_perm('read_channel', user, channel)
+            assign_perm('write_channel', user, channel)
 
-        @detail_route(methods=['post'])
-        def rmuser(self, request, pk=None):
-            channel = self.get_object()
+        # In the end of the process we give the user his supplied rights
+        assign_perm(permission, user, channel)
 
-            serializer = ChannelMemberSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
+        message = {
+            'message':
+            'User {} can {} {}'.format(user, permission, channel)
+        }
+        return Response(message)
 
-            user_id = serializer.data['user']
-            user = User.objects.get(pk=user_id)
-            permission = serializer.data['permissions']
+    @detail_route(methods=['post'])
+    def rmuser(self, request, pk=None):
+        channel = self.get_object()
 
-            # As for adduser route we remove included permissions if necessary
-            if permission == 'write_channel':
-                remove_perm('read_channel', user, channel)
+        serializer = ChannelMemberSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-            if permission == 'admin_channel':
-                remove_perm('read_channel', user, channel)
-                remove_perm('write_channel', user, channel)
+        user_id = serializer.data['user']
+        user = User.objects.get(pk=user_id)
+        permission = serializer.data['permissions']
 
-            remove_perm(permission, user, channel)
+        # As for adduser route we remove included permissions if necessary
+        if permission == 'write_channel':
+            remove_perm('read_channel', user, channel)
 
-            message = {
-                'message':
-                'User {} can not {} {} anymore'.format(
-                    user, permission, channel)
-            }
-            return Response(message)
+        if permission == 'admin_channel':
+            remove_perm('read_channel', user, channel)
+            remove_perm('write_channel', user, channel)
 
-        @detail_route()
-        def groupperms(self, request, pk=None):
-            channel = self.get_object()
-            perms = get_groups_with_perms(channel, attach_perms=True)
+        remove_perm(permission, user, channel)
 
-            serialized_perms = []
-            for group, perm in perms.items():
-                temp_perm = {}
-                temp_perm['group'] = group.id
-                temp_perm['permissions'] = perm
-                serialized_perms.append(temp_perm)
-            
-            return Response(serialized_perms)
+        message = {
+            'message':
+            'User {} can not {} {} anymore'.format(
+                user, permission, channel)
+        }
+        return Response(message)
 
-        @detail_route(methods=['post'])
-        def addgroup(self, request, pk=None):
-            channel = self.get_object()
+    @detail_route()
+    def groupperms(self, request, pk=None):
+        channel = self.get_object()
+        perms = get_groups_with_perms(channel, attach_perms=True)
 
-            serializer = ChannelGroupSerializer(data=request.data) 
-            serializer.is_valid(raise_exception=True)
+        serialized_perms = []
+        for group, perm in perms.items():
+            temp_perm = {}
+            temp_perm['group'] = group.id
+            temp_perm['permissions'] = perm
+            serialized_perms.append(temp_perm)
+        
+        return Response(serialized_perms)
 
-            group_id = serializer.data['group']
-            group = Group.objects.get(pk=group_id)
-            permission = serializer.data['permissions']
+    @detail_route(methods=['post'])
+    def addgroup(self, request, pk=None):
+        channel = self.get_object()
 
-            # To avoid mistakes if a group is granted write rights, it's also
-            # true for read ones. Well this is discutable...
-            if permission == 'write_channel':
-                assign_perm('read_channel', group, channel)
+        serializer = ChannelGroupSerializer(data=request.data) 
+        serializer.is_valid(raise_exception=True)
 
-            # Same thing for admin rights toward write and read ones
-            if permission == 'admin_channel':
-                assign_perm('read_channel', group, channel)
-                assign_perm('write_channel', group, channel)
+        group_id = serializer.data['group']
+        group = Group.objects.get(pk=group_id)
+        permission = serializer.data['permissions']
 
-            # In the end of the process we give the user his supplied rights
-            assign_perm(permission, group, channel)
+        # To avoid mistakes if a group is granted write rights, it's also
+        # true for read ones. Well this is discutable...
+        if permission == 'write_channel':
+            assign_perm('read_channel', group, channel)
 
-            message = {
-                'message':
-                'Group {} can {} {}'.format(group, permission, channel)
-            }
-            return Response(message)
+        # Same thing for admin rights toward write and read ones
+        if permission == 'admin_channel':
+            assign_perm('read_channel', group, channel)
+            assign_perm('write_channel', group, channel)
 
-        @detail_route(methods=['post'])
-        def rmgroup(self, request, pk=None):
-            channel = self.get_object()
+        # In the end of the process we give the user his supplied rights
+        assign_perm(permission, group, channel)
 
-            serializer = ChannelGroupSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
+        message = {
+            'message':
+            'Group {} can {} {}'.format(group, permission, channel)
+        }
+        return Response(message)
 
-            group_id = serializer.data['group']
-            group = Group.objects.get(pk=group_id)
-            permission = serializer.data['permissions']
+    @detail_route(methods=['post'])
+    def rmgroup(self, request, pk=None):
+        channel = self.get_object()
 
-            # As for addgroup route we remove included permissions if necessary
-            if permission == 'write_channel':
-                remove_perm('read_channel', group, channel)
+        serializer = ChannelGroupSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-            if permission == 'admin_channel':
-                remove_perm('read_channel', group, channel)
-                remove_perm('write_channel', group, channel)
+        group_id = serializer.data['group']
+        group = Group.objects.get(pk=group_id)
+        permission = serializer.data['permissions']
 
-            remove_perm(permission, group, channel)
+        # As for addgroup route we remove included permissions if necessary
+        if permission == 'write_channel':
+            remove_perm('read_channel', group, channel)
 
-            message = {
-                'message':
-                'Group {} can not {} {} anymore'.format(
-                    group, permission, channel)
-            }
-            return Response(message)
+        if permission == 'admin_channel':
+            remove_perm('read_channel', group, channel)
+            remove_perm('write_channel', group, channel)
+
+        remove_perm(permission, group, channel)
+
+        message = {
+            'message':
+            'Group {} can not {} {} anymore'.format(
+                group, permission, channel)
+        }
+        return Response(message)
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))
