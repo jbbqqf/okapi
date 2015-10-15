@@ -5,6 +5,29 @@ from guardian.shortcuts import get_objects_for_user
 from rest_framework import filters
 from chat.models import Post, Channel
 
+def get_readable_channel_ids(user):
+    readable_channels = get_objects_for_user(user, 'chat.read_channel',
+                                             use_groups=True)
+    readable_ids = [c.id for c in readable_channels]
+
+    public_channels = Channel.objects.filter(public=True)
+    for public_channel in public_channels:
+        readable_ids.append(public_channel.id)
+
+    unique_readable_ids = set(readable_ids)
+
+    return unique_readable_ids
+
+class ReadableChannelFilter(filters.BaseFilterBackend):
+    """
+    All users cannot see what they want. They are restricted to see only
+    channels on which they have at least read credentials.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        readable_channel_ids = get_readable_channel_ids(request.user)
+        return queryset.filter(id__in=readable_channel_ids)
+
 class ReadablePostFilter(filters.BaseFilterBackend):
     """
     Since channels have permissions, posts posted in a channel are not visible
@@ -13,18 +36,8 @@ class ReadablePostFilter(filters.BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-        readable_channels = get_objects_for_user(request.user,
-                                                 'chat.read_channel',
-                                                 use_groups=True)
-        readable_ids = [c.id for c in readable_channels]
-
-        public_channels = Channel.objects.filter(public=True)
-        for public_channel in public_channels:
-            readable_ids.append(public_channel.id)
-
-        unique_readable_ids = set(readable_ids)
-
-        return queryset.filter(channel__in=unique_readable_ids)
+        readable_channel_ids = get_readable_channel_ids(request.user)
+        return queryset.filter(channel__in=readable_channel_ids)
 
 class PostFilter(FilterSet):
     author = CharFilter(name='author', lookup_type='icontains',
