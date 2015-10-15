@@ -12,7 +12,7 @@ from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
-from guardian.shortcuts import get_users_with_perms, get_groups_with_perms, assign_perm
+from guardian.shortcuts import get_users_with_perms, get_groups_with_perms, assign_perm, remove_perm
 
 from chat.filters import PostFilter, ReadablePostFilter
 from chat.serializers import ChannelSerializer, ChannelMemberSerializer, PostSerializer
@@ -111,6 +111,34 @@ class ChannelView(ListModelMixin,
             message = {
                 'message':
                 'User {} can {} {}'.format(user, permission, channel)
+            }
+            return Response(message)
+
+        @detail_route(methods=['post'])
+        def rmuser(self, request, pk=None):
+            channel = self.get_object()
+
+            serializer = ChannelMemberSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            user_id = serializer.data['user']
+            user = User.objects.get(pk=user_id)
+            permission = serializer.data['permissions']
+
+            # As for adduser route we remove included permissions if necessary
+            if permission == 'write_channel':
+                remove_perm('read_channel', user, channel)
+
+            if permission == 'admin_channel':
+                remove_perm('read_channel', user, channel)
+                remove_perm('write_channel', user, channel)
+
+            remove_perm(permission, user, channel)
+
+            message = {
+                'message':
+                'User {} can not {} {} anymore'.format(
+                    user, permission, channel)
             }
             return Response(message)
 
