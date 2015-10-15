@@ -15,7 +15,7 @@ from profiles.filters import ProfileFilter, UserFilter
 from profiles.models import Profile
 from profiles.serializers import ProfileSerializer, UserSerializer
 from profiles.permissions import IsProfileOwnerOrReadOnly
-from groups.models import Group, GroupUser, get_user_groups
+from groups.models import Group#, get_user_groups
 from groups.serializers import GroupSerializer
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -59,18 +59,18 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('first_name', 'last_name',)
     filter_class = UserFilter
 
-    @detail_route()
-    def groups(self, request, pk=None):
-        """
-        This route allows to request all groups a user belongs to.
-        """
+    # @detail_route()
+    # def groups(self, request, pk=None):
+    #     """
+    #     This route allows to request all groups a user belongs to.
+    #     """
 
-        user = self.get_object()
+    #     user = self.get_object()
 
-        groups = get_user_groups(user)
-        
-        serializer = GroupSerializer(groups, many=True)
-        return Response(serializer.data)
+    #     groups = get_user_groups(user)
+    #     
+    #     serializer = GroupSerializer(groups, many=True)
+    #     return Response(serializer.data)
 
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticatedOrReadOnly, IsProfileOwnerOrReadOnly,))
