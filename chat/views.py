@@ -73,6 +73,17 @@ class ChannelView(ListModelMixin,
             
             return Response(serialized_perms)
 
+        @detail_route()
+        def myperms(self, request, pk=None):
+            channel = self.get_object()
+            me = request.user
+
+            permissions = {}
+            for perm in ['read_channel', 'write_channel', 'admin_channel']:
+                permissions[perm] = me.has_perm(perm, channel)
+
+            return Response(permissions)
+
         @detail_route(methods=['post'])
         def adduser(self, request, pk=None):
             channel = self.get_object()
