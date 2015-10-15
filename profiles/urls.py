@@ -1,4 +1,4 @@
-from django.conf.urls import url, patterns, include
+rom django.conf.urls import url, patterns, include
 
 from rest_framework import routers
 
@@ -9,5 +9,5 @@ router.register(r'users', UserViewSet)
 router.register(r'profiles', ProfileViewSet)
 
 urlpatterns = patterns('',
-    url(r'^users/', include(router.urls)),
+    url(r'^', include(router.urls)),
 )

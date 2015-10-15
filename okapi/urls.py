@@ -16,27 +16,16 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from rest_framework import routers
-import profiles.views
-import groups.views
-import chat.views
-import fileshare.views
-
-router = routers.DefaultRouter()
-# router.register(r'users', profiles.views.UserViewSet)
-# router.register(r'profiles', profiles.views.ProfileViewSet)
-router.register(r'groups', groups.views.GroupViewSet)
-#router.register(r'groupmembers', groups.views.GroupUserViewSet)
-router.register(r'posts', chat.views.PostViewSet)
-router.register(r'channels', chat.views.ChannelView, base_name='channels')
-router.register(r'files', fileshare.views.FileViewSet)
-router.register(r'directories', fileshare.views.DirectoryViewSet)
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+
     url(r'^okauth/', include('okauth.urls')),
-    url(r'^', include('profiles.urls')),
-    url(r'^', include(router.urls)),
+    url(r'^users/', include('profiles.urls')),
+    url(r'^users/', include('groups.urls')),
+    url(r'^chat/', include('chat.urls')),
+    url(r'^share/', include('fileshare.urls')),
+
     url(r'^docs/', include('rest_framework_swagger.urls')),
 ]
 
