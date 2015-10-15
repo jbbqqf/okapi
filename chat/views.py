@@ -5,17 +5,19 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.decorators import authentication_classes, permission_classes, detail_route
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.status import HTTP_400_BAD_REQUEST
 
-from guardian.shortcuts import get_users_with_perms, get_groups_with_perms
+from guardian.shortcuts import get_users_with_perms, get_groups_with_perms, assign_perm
 
 from chat.filters import PostFilter, ReadablePostFilter
-from chat.serializers import ChannelSerializer, PostSerializer
+from chat.serializers import ChannelSerializer, ChannelMemberSerializer, PostSerializer
 from chat.models import Channel, Post
+from profiles.models import User
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))#IsChannelMember,))
@@ -57,13 +59,60 @@ class ChannelView(ListModelMixin,
         search_fields = ('name',)
         # TODO: filter_class = ChannelFilter
 
+        @detail_route()
+        def userperms(self, request, pk=None):
+            channel = self.get_object()
+            perms = get_users_with_perms(channel, attach_perms=True)
+
+            serialized_perms = []
+            for user, perm in perms.items():
+                temp_perm = {}
+                temp_perm['user'] = user.id
+                temp_perm['permissions'] = perm
+                serialized_perms.append(temp_perm)
+            
+            return Response(serialized_perms)
+
+        @detail_route(methods=['post'])
+        def adduser(self, request, pk=None):
+            channel = self.get_object()
+
+            serializer = ChannelMemberSerializer(data=request.data) 
+            serializer.is_valid(raise_exception=True)
+
+            user_id = serializer.data['user']
+            user = User.objects.get(pk=user_id)
+            permission = serializer.data['permissions']
+
+            # To avoid mistakes if a user is granted write rights, it's also
+            # true for read ones. Well this is discutable...
+            if permission == 'write_channel':
+                assign_perm('read_channel', user, channel)
+
+            # Same thing for admin rights toward write and read ones
+            if permission == 'admin_channel':
+                assign_perm('read_channel', user, channel)
+                assign_perm('write_channel', user, channel)
+
+            # In the end of the process we give the user his supplied rights
+            assign_perm(permission, user, channel)
+
+            message = {
+                'message':
+                'User {} can {} {}'.format(user, permission, channel)
+            }
+            return Response(message)
+
 # @authentication_classes((SessionAuthentication, BasicAuthentication,))
 # @permission_classes((IsAuthenticated,))
 # class ChannelMemberView(APIView):
 #         """
-#         === Many to many relationship for user based channels ===
+#         === Manage and retrieve channel members permisions ===
 # 
-#         Only admins or channel owners are allowed to POST or DELETE entries.
+#         Only channel owners are allowed to POST or DELETE entries.
+# 
+#         Any user is only able to retrieve entries relative to channels they
+#         belong to (via groups or not).
 #         """
 # 
 #         # queryset = None
