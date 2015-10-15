@@ -3,7 +3,7 @@ from chat.models import Channel, ChannelForm, Post, PostForm
 
 class ChannelAdmin(admin.ModelAdmin):
     form = ChannelForm
-    list_display = ['name', 'public', 'active', 'created',]
+    list_display = ['id', 'name', 'public', 'active', 'created',]
     search_fields = ['name',]
 
 class PostAdmin(admin.ModelAdmin):
