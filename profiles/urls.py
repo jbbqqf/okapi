@@ -1,4 +1,4 @@
-rom django.conf.urls import url, patterns, include
+from django.conf.urls import url, patterns, include
 
 from rest_framework import routers
 
