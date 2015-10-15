@@ -15,9 +15,10 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from guardian.shortcuts import get_users_with_perms, get_groups_with_perms, assign_perm, remove_perm
 
 from chat.filters import PostFilter, ReadablePostFilter
-from chat.serializers import ChannelSerializer, ChannelMemberSerializer, PostSerializer
+from chat.serializers import ChannelSerializer, ChannelMemberSerializer, ChannelGroupSerializer, PostSerializer
 from chat.models import Channel, Post
 from profiles.models import User
+from groups.models import Group
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))#IsChannelMember,))
@@ -142,46 +143,77 @@ class ChannelView(ListModelMixin,
             }
             return Response(message)
 
-# @authentication_classes((SessionAuthentication, BasicAuthentication,))
-# @permission_classes((IsAuthenticated,))
-# class ChannelMemberView(APIView):
-#         """
-#         === Manage and retrieve channel members permisions ===
-# 
-#         Only channel owners are allowed to POST or DELETE entries.
-# 
-#         Any user is only able to retrieve entries relative to channels they
-#         belong to (via groups or not).
-#         """
-# 
-#         # queryset = None
-#         # serializer_class = ChannelMemberSerializer
-# 
-#         def retrieve(self, request, pk=None):    
-#             channel = self.get_object()
-#             perms = get_users_with_perm(channel, attach_perms=True)
-#             return Response(perms)
+        @detail_route()
+        def groupperms(self, request, pk=None):
+            channel = self.get_object()
+            perms = get_groups_with_perms(channel, attach_perms=True)
 
-# @authentication_classes((SessionAuthentication, BasicAuthentication,))
-# @permission_classes((IsAuthenticated,))
-# class ChannelGroupView(ListModelMixin,
-#                        CreateModelMixin,
-#                        RetrieveModelMixin,
-#                        DestroyModelMixin,
-#                        viewsets.GenericViewSet):
-#         """
-#         === Many to many relationship for group based channels ===
-# 
-#         Only admins or channel owners are allowed to POST or DELETE entries.
-#         """
-# 
-#         queryset = None
-#         serializer_class = ChannelGroupSerializer
-# 
-#         def retrieve(self, request, pk=None):
-#             channel = self.get_object()
-#             perms = get_groups_with_perm(channel, attach_perms=True)
-#             return Response(perms)
+            serialized_perms = []
+            for group, perm in perms.items():
+                temp_perm = {}
+                temp_perm['group'] = group.id
+                temp_perm['permissions'] = perm
+                serialized_perms.append(temp_perm)
+            
+            return Response(serialized_perms)
+
+        @detail_route(methods=['post'])
+        def addgroup(self, request, pk=None):
+            channel = self.get_object()
+
+            serializer = ChannelGroupSerializer(data=request.data) 
+            serializer.is_valid(raise_exception=True)
+
+            group_id = serializer.data['group']
+            group = Group.objects.get(pk=group_id)
+            permission = serializer.data['permissions']
+
+            # To avoid mistakes if a group is granted write rights, it's also
+            # true for read ones. Well this is discutable...
+            if permission == 'write_channel':
+                assign_perm('read_channel', group, channel)
+
+            # Same thing for admin rights toward write and read ones
+            if permission == 'admin_channel':
+                assign_perm('read_channel', group, channel)
+                assign_perm('write_channel', group, channel)
+
+            # In the end of the process we give the user his supplied rights
+            assign_perm(permission, group, channel)
+
+            message = {
+                'message':
+                'Group {} can {} {}'.format(group, permission, channel)
+            }
+            return Response(message)
+
+        @detail_route(methods=['post'])
+        def rmgroup(self, request, pk=None):
+            channel = self.get_object()
+
+            serializer = ChannelGroupSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            group_id = serializer.data['group']
+            group = Group.objects.get(pk=group_id)
+            permission = serializer.data['permissions']
+
+            # As for addgroup route we remove included permissions if necessary
+            if permission == 'write_channel':
+                remove_perm('read_channel', group, channel)
+
+            if permission == 'admin_channel':
+                remove_perm('read_channel', group, channel)
+                remove_perm('write_channel', group, channel)
+
+            remove_perm(permission, group, channel)
+
+            message = {
+                'message':
+                'Group {} can not {} {} anymore'.format(
+                    group, permission, channel)
+            }
+            return Response(message)
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))
