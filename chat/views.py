@@ -17,7 +17,7 @@ from guardian.shortcuts import get_users_with_perms, get_groups_with_perms, assi
 from chat.filters import PostFilter, ReadablePostFilter, ReadableChannelFilter
 from chat.serializers import ChannelSerializer, ChannelMemberSerializer, ChannelGroupSerializer, PostSerializer
 from chat.models import Channel, Post
-from chat.permissions import IsChannelAdminOrReadOnly
+from chat.permissions import IsChannelAdminOrReadOnly, IsChannelWriterOrReadOnly
 from profiles.models import User
 from groups.models import Group
 
@@ -60,6 +60,9 @@ class ChannelView(ListModelMixin,
     filter_backends = (ReadableChannelFilter, DjangoFilterBackend, SearchFilter,)
     search_fields = ('name',)
     # TODO: filter_class = ChannelFilter
+
+    # TODO: give correct permissions on create / delete and check on update
+    # TODO: remove mixins
 
     @detail_route()
     def userperms(self, request, pk=None):
@@ -217,10 +220,10 @@ class ChannelView(ListModelMixin,
         return Response(message)
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, IsChannelWriterOrReadOnly,))
 class PostViewSet(ListModelMixin,
-                  CreateModelMixin,
                   RetrieveModelMixin,
+                  CreateModelMixin,
                   viewsets.GenericViewSet):
     """
     === Post objects provides data for a chat application  ===
@@ -263,6 +266,24 @@ class PostViewSet(ListModelMixin,
     filter_backends = (ReadablePostFilter, DjangoFilterBackend, SearchFilter,)
     search_fields = ('content',)
     filter_class = PostFilter
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        channel = serializer.validated_data['channel']
+
+        if channel.public is True:
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        if request.user.has_perm('chat.write_channel', channel):
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        message = {'detail':
+                   'You do not have permission to perform this action.'}
+        return Response(message, status=status.HTTP_403_FORBIDDEN)
 
     def perform_create(self, serializer):
         """

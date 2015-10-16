@@ -19,8 +19,33 @@ class IsChannelAdminOrReadOnly(permissions.BasePermission):
             # id 1 is supposed to be default general channel
             if channel.id == 1:
                 return False
+
+            if channel.public is True:
+                return True
             
             if request.user.has_perm('chat.admin_channel', channel):
+                return True
+
+            else:
+                return False
+
+class IsChannelWriterOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to allow only users having write_channel rights on a
+    given channel to post messages on that channel.
+
+    If channel is public, any message from any source will be accepted.
+    """
+
+    def has_object_permission(self, request, view, post):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        else:
+            if post.channel.public is True:
+                return True
+
+            if request.user.has_perm('chat.write_channel', post.channel):
                 return True
 
             else:
