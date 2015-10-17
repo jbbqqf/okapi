@@ -6,6 +6,15 @@ from rest_framework import filters
 from chat.models import Post, Channel
 
 def get_readable_channel_ids(user):
+    """
+    Return a list of channel ids on which user given in parameter has at least
+    read_channel permission.
+
+    It also includes public channels, where anyone can read/write on.
+
+    Channel ids are unique.
+    """
+
     readable_channels = get_objects_for_user(user, 'chat.read_channel',
                                              use_groups=True)
     readable_ids = [c.id for c in readable_channels]
@@ -21,7 +30,7 @@ def get_readable_channel_ids(user):
 class ReadableChannelFilter(filters.BaseFilterBackend):
     """
     All users cannot see what they want. They are restricted to see only
-    channels on which they have at least read credentials.
+    channels on which they have at least read_channel permission.
     """
 
     def filter_queryset(self, request, queryset, view):
@@ -32,7 +41,7 @@ class ReadablePostFilter(filters.BaseFilterBackend):
     """
     Since channels have permissions, posts posted in a channel are not visible
     for anyone. This filter makes sure only posts a user can read will be
-    returned
+    returned.
     """
 
     def filter_queryset(self, request, queryset, view):
