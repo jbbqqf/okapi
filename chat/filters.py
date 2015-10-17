@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django_filters import FilterSet, CharFilter, DateTimeFilter
+from django_filters import FilterSet, CharFilter, DateTimeFilter, NumberFilter
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import filters
 from chat.models import Post, Channel
@@ -54,6 +54,8 @@ class PostFilter(FilterSet):
     type = CharFilter(name='type', label='filter on letter value')
     content = CharFilter(name='type', lookup_type='icontains',
                          label='content contain filter')
+    afterid = NumberFilter(name='id', lookup_type='gt',
+                            label='filter posts posted after given post id')
     dflabel = 'filter posts posted after or on provided date / time'
     datefrom = DateTimeFilter(name='date', lookup_type='gte', label=dflabel)
     dtlabel = 'filter posts posted before or on provided date / time'
