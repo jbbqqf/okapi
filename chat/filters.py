@@ -54,8 +54,10 @@ class PostFilter(FilterSet):
     type = CharFilter(name='type', label='filter on letter value')
     content = CharFilter(name='type', lookup_type='icontains',
                          label='content contain filter')
+    channel = NumberFilter(name='channel',
+                           label='filters posts sent on provided channel')
     afterid = NumberFilter(name='id', lookup_type='gt',
-                            label='filter posts posted after given post id')
+                           label='filter posts posted after given post id')
     dflabel = 'filter posts posted after or on provided date / time'
     datefrom = DateTimeFilter(name='date', lookup_type='gte', label=dflabel)
     dtlabel = 'filter posts posted before or on provided date / time'
