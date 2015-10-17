@@ -28,14 +28,18 @@ class ChannelView(ListModelMixin,
                   RetrieveModelMixin,
                   viewsets.GenericViewSet):
     """
-    === Allows users to chat on different public or private channel ===
+    === Allows users to chat on different public or private channels ===
 
-    Channels are supposed to provide mainly a channel by promo and by
-    club group as well as a default public channel.
+    Channels are Post containers filtering who can read/write where. They are
+    mainly supposed to provide a channel for each promo and for each club group
+    as well as a default public channel. It is also possible to create a channel
+    where only two users can read/write for private messaging.
 
-    Default channel which id is 1 cannot be edited by anyone. Other channel
-    are only visible for members of the channel or members of one group
-    associed to the channel.
+    Default general channel which id is 1 is a channel where anyone can
+    read/write. It's permissions cannot be edited by anyone.
+
+    When a user peform a GET query on /chat/channels/, only channels where the
+    user or one of his group have at least read rights are returned.
 
     ---
 
@@ -60,9 +64,6 @@ class ChannelView(ListModelMixin,
     search_fields = ('name',)
     # TODO: filter_class = ChannelFilter
 
-    # TODO: give correct permissions on create / delete and check on update
-    # TODO: remove mixins
-
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
 
@@ -85,6 +86,17 @@ class ChannelView(ListModelMixin,
 
     @detail_route()
     def userperms(self, request, pk=None):
+        """
+        === Return a list of users with their permissions ===
+        
+        Keep in mind that not only user permissions are checked, but also
+        group dependant permissions.
+
+        For exemple : userA has no permission on chanA. But userA is in groupA.
+        groupA has write_perm on chanA. So userA will be mentionned by
+        /userperms/.
+        """
+
         channel = self.get_object()
         perms = get_users_with_perms(channel, attach_perms=True)
 
@@ -99,6 +111,10 @@ class ChannelView(ListModelMixin,
 
     @detail_route()
     def myperms(self, request, pk=None):
+        """
+        === Return permissions requesting user has ===
+        """
+
         channel = self.get_object()
         me = request.user
 
@@ -110,6 +126,23 @@ class ChannelView(ListModelMixin,
 
     @detail_route(methods=['post'])
     def adduser(self, request, pk=None):
+        """
+        === Add a user permission ===
+        
+        FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
+        TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * user : user id
+          * permissions : `read_channel`, `write_channel` or `admin_channel`
+
+        Keep in mind that permissions are inclusive. admin_channel includes
+        write_channel which includes read_channel.
+
+        If you give admin_channel permissions, you will also give both
+        read_channel and write_channel.
+        """
+
         channel = self.get_object()
 
         serializer = ChannelMemberSerializer(data=request.data) 
@@ -140,6 +173,23 @@ class ChannelView(ListModelMixin,
 
     @detail_route(methods=['post'])
     def rmuser(self, request, pk=None):
+        """
+        === Remove a user permission ===
+        
+        FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT. REFER TO FOLLOWING
+        INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * user : user id
+          * permissions : `read_channel`, `write_channel` or `admin_channel`
+
+        Keep in mind that permissions are inclusive. admin_channel includes
+        write_channel which includes read_channel.
+
+        If you remove read_channel permissions, you will also remove both
+        write_channel and admin_channel.
+        """
+
         channel = self.get_object()
 
         serializer = ChannelMemberSerializer(data=request.data)
@@ -168,6 +218,10 @@ class ChannelView(ListModelMixin,
 
     @detail_route()
     def groupperms(self, request, pk=None):
+        """
+        === Return a list of group with their permissions ===
+        """
+
         channel = self.get_object()
         perms = get_groups_with_perms(channel, attach_perms=True)
 
@@ -182,6 +236,23 @@ class ChannelView(ListModelMixin,
 
     @detail_route(methods=['post'])
     def addgroup(self, request, pk=None):
+        """
+        === Add a group permission ===
+        
+        FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT. REFER TO FOLLOWING
+        INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * group : group id
+          * permissions : `read_channel`, `write_channel` or `admin_channel`
+
+        Keep in mind that permissions are inclusive. admin_channel includes
+        write_channel which includes read_channel.
+
+        If you give admin_channel permissions, you will also give both
+        read_channel and write_channel.
+        """
+
         channel = self.get_object()
 
         serializer = ChannelGroupSerializer(data=request.data) 
@@ -212,6 +283,23 @@ class ChannelView(ListModelMixin,
 
     @detail_route(methods=['post'])
     def rmgroup(self, request, pk=None):
+        """
+        === Remove a group permission ===
+        
+        FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT. REFER TO FOLLOWING
+        INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * group : group id
+          * permissions : `read_channel`, `write_channel` or `admin_channel`
+
+        Keep in mind that permissions are inclusive. admin_channel includes
+        write_channel which includes read_channel.
+
+        If you remove read_channel permissions, you will also remove both
+        write_channel and admin_channel.
+        """
+
         channel = self.get_object()
 
         serializer = ChannelGroupSerializer(data=request.data)
@@ -242,23 +330,27 @@ class ChannelView(ListModelMixin,
 @permission_classes((IsAuthenticated, IsChannelWriterOrReadOnly,))
 class PostViewSet(ListModelMixin,
                   RetrieveModelMixin,
-                  CreateModelMixin,
                   viewsets.GenericViewSet):
     """
-    === Post objects provides data for a chat application  ===
+    === Post objects are messages broadcasted in channels  ===
 
-    You can only perform GET or POST requests on post objects if you are
+    You can perform GET or POST requests on post objects only if you are
     authenticated. The reason for this is we don't want people from the outside
     to be able to read random cynical, sexist and hyper-sexualized
     conversations.
 
     For the moment, the only type of post a connected user can POST are messages
-    (`m`). In the future we can imagine games to be accessible from the API and
-    score notifications will be displayed as messages.
+    (`m`) : it is automaticaly set. In the future we can imagine other
+    applications being able to broadcast messages in channels such as games
+    sending score notifications.
 
-    The only field you need to provide when a user writes a message is its
-    content. Current user and current datetime will be recorded in the base but
-    you will be able to access those fields only when performing GET requests.
+    Current user as author and current datetime are be recorded in the
+    database without having to provide it. It is possible to access those
+    fields when performing GET requests.
+
+    Since posts depend on channels they are broadcasted to, a user requesting
+    /chat/posts/ route will be only able to see posts refering to channels where
+    he has read_channel rights.
 
     Posts can not be edited... excepted by admins in the admin interface if
     necessary.
