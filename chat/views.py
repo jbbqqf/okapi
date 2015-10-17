@@ -132,11 +132,11 @@ class ChannelView(ListModelMixin,
 
         # As for adduser route we remove included permissions if necessary
         if permission == 'write_channel':
-            remove_perm('read_channel', user, channel)
+            remove_perm('admin_channel', user, channel)
 
-        if permission == 'admin_channel':
-            remove_perm('read_channel', user, channel)
+        if permission == 'read_channel':
             remove_perm('write_channel', user, channel)
+            remove_perm('admin_channel', user, channel)
 
         remove_perm(permission, user, channel)
 
@@ -204,11 +204,11 @@ class ChannelView(ListModelMixin,
 
         # As for addgroup route we remove included permissions if necessary
         if permission == 'write_channel':
-            remove_perm('read_channel', group, channel)
+            remove_perm('admin_channel', group, channel)
 
-        if permission == 'admin_channel':
-            remove_perm('read_channel', group, channel)
+        if permission == 'read_channel':
             remove_perm('write_channel', group, channel)
+            remove_perm('admin_channel', group, channel)
 
         remove_perm(permission, group, channel)
 
