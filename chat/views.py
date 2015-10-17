@@ -13,6 +13,7 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveMode
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from guardian.shortcuts import get_users_with_perms, get_groups_with_perms, assign_perm, remove_perm
+from guardian.utils import clean_orphan_obj_perms
 
 from chat.filters import PostFilter, ReadablePostFilter, ReadableChannelFilter
 from chat.serializers import ChannelSerializer, ChannelMemberSerializer, ChannelGroupSerializer, PostSerializer
@@ -24,10 +25,8 @@ from groups.models import Group
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated, IsChannelAdminOrReadOnly,))
 class ChannelView(ListModelMixin,
-              CreateModelMixin,
-              RetrieveModelMixin,
-              DestroyModelMixin,
-              viewsets.GenericViewSet):
+                  RetrieveModelMixin,
+                  viewsets.GenericViewSet):
     """
     === Allows users to chat on different public or private channel ===
 
@@ -63,6 +62,26 @@ class ChannelView(ListModelMixin,
 
     # TODO: give correct permissions on create / delete and check on update
     # TODO: remove mixins
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        channel = serializer.save()
+
+        # Request initiator is graunted admin rights on creation
+        assign_perm('read_channel', request.user, channel)
+        assign_perm('write_channel', request.user, channel)
+        assign_perm('admin_channel', request.user, channel)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        clean_orphan_obj_perms()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @detail_route()
     def userperms(self, request, pk=None):
