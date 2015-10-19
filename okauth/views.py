@@ -1,4 +1,5 @@
 from django.contrib.auth import login, logout
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -37,6 +38,34 @@ class LoginView(GenericAPIView):
         return Response(response_data)
 
 @permission_classes((AllowAny,))
+class CheckTokenView(APIView):
+    """
+    === Check if your authent token is still in database ===
+
+    Since it is possible to connect on multiple devices, any call to logout
+    endpoint will destroy all token based authentications. This route is useful
+    if you need to check whether or not your token is still valid.
+    """
+
+    def get(self, request):
+        try:
+            auth_headers = request.META.get('HTTP_AUTHORIZATION')
+            auth_token = auth_headers.split(' ')
+            assert (auth_token[0] == 'Token'), \
+                "Token should be announced with a `Token ` string"
+
+        except:
+            message = {'message': 'No token supplied'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            Token.objects.get(key=auth_token[1])
+            return Response(True)
+
+        except ObjectDoesNotExist:
+            return Response(False)
+
+@permission_classes((AllowAny,))
 class LogoutView(APIView):
     """
     === API endpoint to log out django users and destroy django sessions ===
@@ -54,6 +83,7 @@ class LogoutView(APIView):
             auth_token = auth_headers.split(' ')
             assert (auth_token[0] == 'Token'), \
                 "Token should be announced with a `Token ` string"
+
         except:
             message = {'message': 'No token supplied'}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
