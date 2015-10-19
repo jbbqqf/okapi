@@ -34,6 +34,11 @@ class Theme(models.Model):
     def __unicode__(self):
         return u'{}/{}'.format(self.ui, self.name)
 
+class ThemeForm(ModelForm):
+    class Meta:
+        model = Theme
+        fields = ['ui', 'name', 'comment',]
+
 class UserTheme(models.Model):
     """
     A many to many relationship model to record theme user preferences.
@@ -44,3 +49,11 @@ class UserTheme(models.Model):
 
     class Meta:
         unique_together = [('user', 'theme'),]
+
+    def __unicode__(self):
+        return u'{} has theme {}'.format(self.user, self.theme)
+
+class UserThemeForm(ModelForm):
+    class Meta:
+        model = UserTheme
+        fields = ['user', 'theme',]
