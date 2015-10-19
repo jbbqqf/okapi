@@ -6,12 +6,12 @@ from fileshare.models import File, Directory
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
-        fields = ('id', 'name', 'parent',)
+        fields = ['id', 'created', 'modified', 'name', 'parent', 'creator',]
 
 class DirectorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Directory
-        fields = ('id', 'name', 'parent',)
+        fields = ['id', 'created', 'modified', 'name', 'parent',]
 
     def validate(self, data):
         try:
