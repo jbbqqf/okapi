@@ -109,13 +109,15 @@ class DirectoryViewSet(viewsets.GenericViewSet,
         existing root directory is allowed to have a null parent.
         """
 
-        # TODO: retourner une erreur dans le cas ou on deplace le parent
-        #       dans un child
-
         dir = self.get_object()
         serializer = DirectorySerializer(dir, data=request.data)
         
         serializer.is_valid(raise_exception=True)
+
+        if dir.is_parent(serializer.validated_data['parent']):
+            message = {'message':
+                       'You cannot move a parent in one of his childs'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             with transaction.atomic():

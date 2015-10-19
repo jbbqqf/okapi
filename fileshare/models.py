@@ -61,6 +61,31 @@ class Directory(models.Model):
         else:
             return '{}{}/'.format(self.parent.to_relative(), self.name)
 
+    def is_parent(self, dir):
+        """
+        Check (recursively) if self is parent of supplied `dir` (supply a simple
+        name). Return True or False.
+        This method should be used before making operations on a directory such
+        as changing its location (ie. if a user requests to move a parent in
+        one of its child dir).
+        """
+
+        childs = Directory.objects.filter(parent=self)
+
+        if dir in childs:
+            return True
+
+        elif childs.is_empty():
+            return False
+
+        else:
+            for child in childs:
+                if child.is_parent(dir):
+                    return True
+
+            else:
+                return False
+
 class DirectoryForm(ModelForm):
     class Meta:
         model = Directory
