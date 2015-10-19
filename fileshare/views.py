@@ -38,8 +38,8 @@ class DirectoryViewSet(viewsets.GenericViewSet,
     """
     === Directory objects map system directories for fileshare application ===
 
-    Directories support only alphanumeric characters and ` `, `_` and `-` (even
-    if posix norm allows you some special characters).
+    Directories support only alphanumeric characters and `.`, ` `, `_` and `-`
+    (even if posix norm allows you some special characters).
 
     Since directories are stored in filesystem, you cannot have two directories
     with the same name on the same line level.
@@ -78,7 +78,7 @@ class DirectoryViewSet(viewsets.GenericViewSet,
 
     def create(self, request, pk=None):
         """
-        Request for creating a fileshare directory.
+        === Create a shared directory ===
 
         You cannot create a directory whose parent is null, since only already
         existing root directory is allowed to have a null parent.
@@ -103,10 +103,13 @@ class DirectoryViewSet(viewsets.GenericViewSet,
 
     def update(self, request, pk=None):
         """
-        Request for updating a fileshare directory.
+        === Update a shared directory ===
 
         You cannot update a directory to a null parent, since only already
         existing root directory is allowed to have a null parent.
+
+        You cannot move a directory in one of his childs. If you try to do so,
+        an http 400 code will be raised.
         """
 
         dir = self.get_object()
@@ -149,7 +152,7 @@ class DirectoryViewSet(viewsets.GenericViewSet,
 
     def destroy(self, request, pk=None):
         """
-        Request for deleting a directory.
+        === Delete a shared directory ===
 
         There is no particular permissions to delete directories. Any logged
         user can do it but only if it's empty. If it's not, an error 400 will be
