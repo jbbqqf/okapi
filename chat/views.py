@@ -15,7 +15,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from guardian.shortcuts import get_users_with_perms, get_groups_with_perms, assign_perm, remove_perm
 from guardian.utils import clean_orphan_obj_perms
 
-from chat.filters import PostFilter, ReadablePostFilter, ReadableChannelFilter
+from chat.filters import PostFilter, ReadablePostFilter, ChannelFilter, ReadableChannelFilter
 from chat.serializers import ChannelSerializer, ChannelMemberSerializer, ChannelGroupSerializer, PostSerializer
 from chat.models import Channel, Post
 from chat.permissions import IsChannelAdminOrReadOnly, IsChannelWriterOrReadOnly
@@ -62,7 +62,7 @@ class ChannelView(ListModelMixin,
     serializer_class = ChannelSerializer
     filter_backends = (ReadableChannelFilter, DjangoFilterBackend, SearchFilter,)
     search_fields = ('name',)
-    # TODO: filter_class = ChannelFilter
+    filter_class = ChannelFilter
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)

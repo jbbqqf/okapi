@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django_filters import FilterSet, CharFilter, DateTimeFilter, NumberFilter
+from django_filters import FilterSet, CharFilter, DateTimeFilter, NumberFilter, BooleanFilter
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import filters
 from chat.models import Post, Channel
@@ -36,6 +36,21 @@ class ReadableChannelFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         readable_channel_ids = get_readable_channel_ids(request.user)
         return queryset.filter(id__in=readable_channel_ids)
+
+class ChannelFilter(FilterSet):
+    name = CharFilter(name='name', lookup_type='icontains',
+                      label='name contain filter')
+    public = BooleanFilter(name='public', label='is public ?')
+    ca_label = 'filter channels created after or on provided date / time'
+    created_after = DateTimeFilter(name='date', lookup_type='gte',
+                                   label=ca_label)
+    cb_label = 'filter channels created before or on provided date / time'
+    created_before = DateTimeFilter(name='date', lookup_type='lte',
+                                    label=ca_label)
+
+    class Meta:
+        model = Channel
+        fields = ['name', 'public', 'created_after', 'created_before',]
 
 class ReadablePostFilter(filters.BaseFilterBackend):
     """
