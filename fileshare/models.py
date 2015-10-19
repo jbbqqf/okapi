@@ -3,8 +3,8 @@ from django.core.validators import RegexValidator
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 
-ALPHANUMERIC = RegexValidator(r'^[0-9a-zA-Z _-]*$',
-                              'Use only alphanumeric characters or ` _-`.')
+ALPHANUMERIC = RegexValidator(r'^[0-9a-zA-Z. _-]*$',
+                              'Use only alphanumeric characters or `. _-`.')
 
 class Directory(models.Model):
     """
@@ -12,11 +12,11 @@ class Directory(models.Model):
     a media root directory (~okapi/www/media/fileshare) where users can drop
     files and share it.
 
-    Directories support only alphanumeric characters and ` `, `_` and `-` (even
-    if posix norm allows some special characters). This directory model does
-    not record the owner of a directory, allowing everyone to edit them. However
-    API views do not allow you to remove a directory if it's not empty, and
-    Files are subject to write rights.
+    Directories support only alphanumeric characters and `.`, ` `, `_` and `-`
+    (even if posix norm allows some special characters). This directory model
+    does not record the owner of a directory, allowing everyone to edit them.
+    However API views do not allow you to remove a directory if it's not empty,
+    and Files are subject to write rights.
 
     Root directory is recorded in base but should NEVER be edited unless you
     know what you're doing, even if it's possible through admin interface. It
@@ -71,10 +71,10 @@ class File(models.Model):
     Files in fileshare application map system stored files in the virtual
     filesystem provided by Directory models.
 
-    File names support only alphanumeric characters and ` `, `_` and `-` (even
-    if posix norm allows some special characters). This File model does record
-    the creator of a directory, which also becomes its owner. Only owners and
-    admins are able to PUT or DELETE a File.
+    File names support only alphanumeric characters and `.`, ` `, `_` and `-`
+    (even if posix norm allows some special characters). This File model does
+    record the creator of a directory, which also becomes its owner. Only owners
+    and admins are able to PUT or DELETE a File.
     """
 
     # use null only if your file if stored in the root directoy
