@@ -37,13 +37,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'guardian',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_swagger',
     'corsheaders',
     'common',
     'profiles',
-    'users',
     'groups',
     'chat',
     'fileshare',
@@ -111,6 +111,13 @@ USE_L10N = True
 
 USE_TZ = True
 
+# guardian
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # default
+    'guardian.backends.ObjectPermissionBackend',
+)
+
+ANONYMOUS_USER_ID = -1
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
