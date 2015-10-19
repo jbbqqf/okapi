@@ -14,6 +14,7 @@ class DirectorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'parent',)
 
     def validate(self, data):
+        # TODO: PATCH compatibility (name / parent are not mandatory)
         name = data['name']
         parent = data['parent']
 

@@ -11,12 +11,12 @@ from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from fileshare.models import File, Directory
 from fileshare.serializers import FileSerializer, DirectorySerializer
-from fileshare.permissions import IsFileOwnerOrAdminOrReadOnly
+from fileshare.permissions import IsFileOwnerOrAdminOrReadOnly, CanEditDirectory
 from fileshare.filters import FileFilter, DirectoryFilter
 from common.common import cmd
 
@@ -30,8 +30,8 @@ class FileViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
-@authentication_classes((SessionAuthentication, BasicAuthentication,))
-@permission_classes((IsAuthenticatedOrReadOnly,))
+@authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
+@permission_classes((IsAuthenticatedOrReadOnly, CanEditDirectory,))
 class DirectoryViewSet(viewsets.GenericViewSet,
                        ListModelMixin,
                        RetrieveModelMixin):
@@ -157,17 +157,6 @@ class DirectoryViewSet(viewsets.GenericViewSet,
         """
 
         dir = self.get_object()
-
-        if dir.parent is None:
-            error = {'message': 'Don\'t DELETE root directory you hacker :o'}
-            return Response(error, status=status.HTTP_400_BAD_REQUEST)
-
-        dir_childs = Directory.objects.filter(parent=dir).exists()
-        file_childs = File.objects.filter(parent=dir).exists()
-
-        if (dir_childs or file_childs) is True:
-            error = {'message': 'Cannot DELETE a directory which has childs'}
-            return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             with transaction.atomic():
