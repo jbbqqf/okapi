@@ -1,5 +1,6 @@
 from django.db import models
 from django.forms import ModelForm
+from django.db import IntegrityError
 
 from django.contrib.auth.models import User
 
@@ -47,11 +48,26 @@ class UserTheme(models.Model):
     user = models.ForeignKey(User)
     theme = models.ForeignKey(Theme)
 
-    class Meta:
-        unique_together = [('user', 'theme'),]
-
     def __unicode__(self):
         return u'{} has theme {}'.format(self.user, self.theme)
+
+    @classmethod
+    def _validate_unique(cls, self):
+        """
+        http://stackoverflow.com/questions/15160721/forcing-unique-together-with-model-inheritance 
+        """
+
+        try:
+            user_theme = cls._default_manager.get(user=self.user,
+                                                  theme__ui=self.theme.ui)
+            if not user_theme == self:
+                raise IntegrityError('Duplicate')
+
+        except cls.DoesNotExist:
+            pass
+
+    def clean(self):
+       self._validate_unique(self)
 
 class UserThemeForm(ModelForm):
     class Meta:
