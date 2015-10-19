@@ -50,4 +50,4 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter,)
     search_fields = ['name', 'url', 'mailing', 'description',]
-    # TODO: filter_class = GroupFilter
+    filter_class = GroupFilter
