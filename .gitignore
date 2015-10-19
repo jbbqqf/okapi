@@ -1,2 +1,3 @@
 *.pyc
 okapi/settings.py
+*/migrations/*
