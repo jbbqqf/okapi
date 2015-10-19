@@ -9,7 +9,7 @@ from groups.models import Group
 class ChannelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Channel
-        fields = ['id', 'name', 'public', 'active',]
+        fields = ['id', 'name', 'public', 'active', 'created',]
 
 class ChannelMemberSerializer(serializers.Serializer):
     PERMISSIONS = [
