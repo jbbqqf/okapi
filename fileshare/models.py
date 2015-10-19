@@ -75,16 +75,13 @@ class Directory(models.Model):
         if dir in childs:
             return True
 
-        elif childs.is_empty():
-            return False
-
-        else:
+        elif childs.exists():
             for child in childs:
                 if child.is_parent(dir):
                     return True
 
-            else:
-                return False
+        else:
+            return False
 
 class DirectoryForm(ModelForm):
     class Meta:
