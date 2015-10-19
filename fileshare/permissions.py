@@ -27,9 +27,6 @@ class CanEditDirectory(permissions.BasePermission):
             if directory.parent is None:
                 return False
 
-            if request.method == 'PATCH' or request.method == 'PUT':
-                pass
-
             if request.method == 'DELETE':
                 dir_childs = Directory.objects.filter(parent=directory).exists()
                 file_childs = File.objects.filter(parent=directory).exists()
