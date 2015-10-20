@@ -48,7 +48,7 @@ INSTALLED_APPS = (
     'chat',
     'fileshare',
     'okauth',
-    'themes',
+    'preferences',
 )
 
 MIDDLEWARE_CLASSES = (

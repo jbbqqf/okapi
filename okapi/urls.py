@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^users/', include('groups.urls')),
     url(r'^chat/', include('chat.urls')),
     url(r'^share/', include('fileshare.urls')),
+    url(r'^prefs/', include('preferences.urls')),
 
     url(r'^docs/', include('rest_framework_swagger.urls')),
 ]
