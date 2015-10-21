@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from preferences.models import UserInterface, UserTheme
+from preferences.models import UserInterface, UserPref
 
 class UserInterfaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInterface
         read_only_fields = ['name', 'comment',]
 
-class UserThemeSerializer(serializers.ModelSerializer):
+class UserPrefSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserTheme
+        model = UserPref
         fields = ['user',]

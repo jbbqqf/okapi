@@ -22,36 +22,19 @@ class UserInterfaceForm(ModelForm):
         model = UserInterface
         fields = ['name', 'comment',]
 
-class UserTheme(models.Model):
+class UserPref(models.Model):
     """
     A many to many relationship model to record theme user preferences.
     """
 
     user = models.ForeignKey(User)
-#     theme = models.ForeignKey(Theme)
-# 
-#     def __unicode__(self):
-#         return u'{} has theme {}'.format(self.user, self.theme)
-# 
-#     @classmethod
-#     def _validate_unique(cls, self):
-#         """
-#         http://stackoverflow.com/questions/15160721/forcing-unique-together-with-model-inheritance 
-#         """
-# 
-#         try:
-#             user_theme = cls._default_manager.get(user=self.user,
-#                                                   theme__ui=self.theme.ui)
-#             if not user_theme == self:
-#                 raise IntegrityError('Duplicate')
-# 
-#         except cls.DoesNotExist:
-#             pass
-# 
-#     def clean(self):
-#        self._validate_unique(self)
+    ui = models.ForeignKey(UserInterface)
+    conf = models.TextField(blank=True)
 
-class UserThemeForm(ModelForm):
     class Meta:
-        model = UserTheme
-        fields = ['user',]
+        unique_together = ('user', 'ui',)
+
+class UserPrefForm(ModelForm):
+    class Meta:
+        model = UserPref
+        fields = ['user', 'ui', 'conf',]
