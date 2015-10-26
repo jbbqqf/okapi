@@ -15,7 +15,7 @@ from profiles.filters import ProfileFilter, UserFilter
 from profiles.models import Profile
 from profiles.serializers import ProfileSerializer, UserSerializer
 from profiles.permissions import IsProfileOwnerOrReadOnly
-from groups.models import Group#, get_user_groups
+from groups.models import Group
 from groups.serializers import GroupSerializer
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -53,7 +53,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
               type: string
     """
 
-    queryset = User.objects.all()
+    queryset = User.objects.exclude(id=-1)
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter,)
     search_fields = ('first_name', 'last_name',)
