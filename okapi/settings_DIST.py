@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'fileshare',
     'okauth',
     'preferences',
+    'news',
 )
 
 MIDDLEWARE_CLASSES = (
