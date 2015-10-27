@@ -9,9 +9,10 @@ from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from news.models import Event
 from news.serializers import EventSerializer
 from news.filters import EventFilter
+from news.permissions import IsEventAuthorOrAdminOrReadOnly
 
-@authentication_classes((TokenAuthentication, SessionAuthentication))
-@permission_classes((IsAuthenticatedOrReadOnly,))
+@authentication_classes((TokenAuthentication, SessionAuthentication,))
+@permission_classes((IsAuthenticatedOrReadOnly, IsEventAuthorOrAdminOrReadOnly,))
 class EventView(ModelViewSet):
     
     queryset = Event.objects.all()
