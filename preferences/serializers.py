@@ -7,8 +7,6 @@ class UserInterfaceSerializer(serializers.ModelSerializer):
         read_only_fields = ['name', 'comment',]
 
 class UserPrefSerializer(serializers.ModelSerializer):
-#    ui = serializers.StringRelatedField()
-
     class Meta:
         model = UserPref
         read_only_fields = ['user',]
