@@ -14,6 +14,36 @@ from news.permissions import IsEventAuthorOrAdminOrReadOnly
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
 @permission_classes((IsAuthenticatedOrReadOnly, IsEventAuthorOrAdminOrReadOnly,))
 class EventView(ModelViewSet):
+    """
+    === Create and share events of your BDE and other organizations ! ===
+
+    Only connected users can create events but you don't need to be connected
+    to read it. Only an event author or a user admin with is_staff property set
+    to true can PUT / DELETE his event.
+
+    author and created fields are added automaticaly on an event creation.
+
+    link should be an url (not more than 255 characters) but can be anything
+    else...
+
+    ---
+
+    list:
+        parameters:
+            - name: search
+              description: contain filter for author's name, title, description
+                           and link
+              paramType: query
+              type: string
+
+    retrieve:
+        parameters:
+            - name: search
+              description: contain filter for author's name, title, description
+                           and link
+              paramType: query
+              type: string
+    """
     
     queryset = Event.objects.all()
     serializer_class = EventSerializer
