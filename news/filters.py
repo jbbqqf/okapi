@@ -18,14 +18,16 @@ class EventFilter(FilterSet):
     created_before = DateTimeFilter(name='created', lookup_type='lte',
                                     label=cb_label)
 
-    da_label = 'filter events happening after or on provided date / time'
+    da_label = 'filter events happening after or on provided date'
     dday_after = DateTimeFilter(name='dday', lookup_type='gte',
                                 label=da_label)
-    db_label = 'filter events happening before or on provided date / time'
+    db_label = 'filter events happening before or on provided date'
     dday_before = DateTimeFilter(name='dday', lookup_type='lte',
                                  label=db_label)
+    do_label = 'filter events happening on provided date'
+    dday_on = DateTimeFilter(name='dday', label=do_label)
 
     class Meta:
         model = Event
-        fields = ['author', 'title', 'description', 'link', 'dday_after',
-                  'dday_before', 'created_after', 'created_before',]
+        fields = ['author', 'title', 'description', 'link', 'dday_on',
+                  'dday_on', 'dday_before', 'created_after', 'created_before',]
