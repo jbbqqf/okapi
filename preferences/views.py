@@ -8,7 +8,9 @@ from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateMode
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
+from rest_framework.filters import DjangoFilterBackend, SearchFilter
 
+from preferences.filters import UserInterfaceFilter, UserPrefFilter
 from preferences.models import UserInterface, UserPref
 from preferences.serializers import UserInterfaceSerializer, UserPrefSerializer
 
@@ -23,6 +25,9 @@ class UserInterfaceView(ListModelMixin,
 
     queryset = UserInterface.objects.all()
     serializer_class = UserInterfaceSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter,)
+    search_fields = ('name', 'comment',)
+    filter_class = UserInterfaceFilter
 
 @authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
 @permission_classes((IsAuthenticated,))
@@ -36,6 +41,9 @@ class UserPrefView(ListModelMixin,
     """
 
     serializer_class = UserPrefSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter,)
+    search_fields = ('ui__name', 'conf',)
+    filter_class = UserPrefFilter
 
     def get_queryset(self):
         queryset = UserPref.objects.filter(user=self.request.user)
