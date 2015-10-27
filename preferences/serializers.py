@@ -10,4 +10,4 @@ class UserPrefSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserPref
         read_only_fields = ['user',]
-        fields = ['id', 'ui', 'conf',]
+        fields = ['id', 'user', 'ui', 'conf',]
