@@ -21,6 +21,25 @@ class UserInterfaceView(ListModelMixin,
                         GenericViewSet):
     """
     === A list of all known user interfaces ===
+
+    Those objects are readonly API-wise. If you need to add your own entry, you
+    should contact an admin.
+
+    ---
+
+    list:
+        parameters:
+            - name: search
+              description: contain filter for name and comment
+              paramType: query
+              type: string
+
+    retrieve:
+        parameters:
+            - name: search
+              description: contain filter for name and comment
+              paramType: query
+              type: string
     """
 
     queryset = UserInterface.objects.all()
@@ -37,7 +56,42 @@ class UserPrefView(ListModelMixin,
                    DestroyModelMixin,
                    GenericViewSet):
     """
-    === Allows a user to access his saved themes ===
+    === Allows a user to access his saved prefs ===
+
+    An authenticated user can only GET, POST or PATCH his own preferences.
+
+    All users do not need to have custom preferences. You should create a new
+    entry only for users who changed something from the default preferences.
+    When retrieving user preferences, if you get nothing, you know this user
+    has default preferences.
+
+    A constraint prevents any user to have two different preferences for a
+    given user interface. It means you filter entries by ui_id, you should
+    always have only one entry. But BE CAREFUL : user interface ids are not
+    guaranteed to be constant over time (if database is migrated for example),
+    even if it won't happen often.
+
+    A good practice when you manipulate user preferences if you want to be
+    100% sure of what you recieve is to filter your results both by id and user
+    interface name. It should be tested by the interface, and if one fails you
+    can just use default parameters instead of running the risk to use
+    corrupted data.
+
+    ---
+
+    list:
+        parameters:
+            - name: search
+              description: contain filter for ui's name and conf
+              paramType: query
+              type: string
+
+    retrieve:
+        parameters:
+            - name: search
+              description: contain filter for ui's name and conf
+              paramType: query
+              type: string
     """
 
     serializer_class = UserPrefSerializer
