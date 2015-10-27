@@ -1,10 +1,12 @@
+from time import strftime
 from django.shortcuts import render
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.decorators import authentication_classes, permission_classes, list_route
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
+from rest_framework.response import Response
 
 from news.models import Event
 from news.serializers import EventSerializer
@@ -53,3 +55,9 @@ class EventView(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    @list_route(methods=['get'])
+    def today(self, request):
+        today_events = Event.objects.filter(dday=strftime('%Y-%m-%d'))
+        serializer = self.get_serializer(today_events, many=True)
+        return Response(serializer.data)
