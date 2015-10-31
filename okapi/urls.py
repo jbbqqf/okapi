@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^share/', include('fileshare.urls')),
     url(r'^prefs/', include('preferences.urls')),
     url(r'^news/', include('news.urls')),
+    url(r'^grades/', include('grades.urls')),
 
     url(r'^docs/', include('rest_framework_swagger.urls')),
 ]
