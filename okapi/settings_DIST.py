@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'okauth',
     'preferences',
     'news',
+    'grades',
 )
 
 MIDDLEWARE_CLASSES = (
