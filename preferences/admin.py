@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib.admin import ModelAdmin
-from django.contrib.admin.site import register
+from django.contrib import admin
 from preferences.models import (
     UserInterface, UserInterfaceForm, UserPref, UserPrefForm)
 
 
-class UserInterfaceAdmin(ModelAdmin):
+class UserInterfaceAdmin(admin.ModelAdmin):
     form = UserInterfaceForm
     list_display = ['name', 'comment', ]
     search_fields = ['name', 'comment', ]
 
 
-class UserPrefAdmin(ModelAdmin):
+class UserPrefAdmin(admin.ModelAdmin):
     form = UserPrefForm
     list_display = ['user', 'ui', 'conf', ]
     search_fields = ['user', 'ui', 'conf', ]
 
-register(UserInterface, UserInterfaceAdmin)
-register(UserPref, UserPrefAdmin)
+admin.site.register(UserInterface, UserInterfaceAdmin)
+admin.site.register(UserPref, UserPrefAdmin)

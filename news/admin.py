@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib.admin import ModelAdmin
-from django.contrib.admin.site import register
+from django.contrib import admin
 from news.models import Event, EventForm
 
 
-class EventAdmin(ModelAdmin):
+class EventAdmin(admin.ModelAdmin):
     form = EventForm
     list_display = ['author', 'title', 'description', 'link', 'created',
                     'dday', 'visible', ]
     search_fields = ['author', 'title', 'description', 'link', 'dday', ]
 
-register(Event, EventAdmin)
+admin.site.register(Event, EventAdmin)
