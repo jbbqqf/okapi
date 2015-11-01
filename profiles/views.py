@@ -120,7 +120,7 @@ class ProfileViewSet(ListModelMixin,
     @detail_route(methods=['post'])
     def addnumber(self, request, pk=None, *args, **kwargs):
         """
-        === Add a phone number to pk-user ===
+        === Add a phone number to pk-profile ===
 
         FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
         TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
@@ -148,7 +148,7 @@ class ProfileViewSet(ListModelMixin,
     @detail_route(methods=['post'])
     def rmnumber(self, request, pk=None, *args, **kwargs):
         """
-        === Remove a phone number to pk-user ===
+        === Remove a phone number to pk-profile ===
 
         FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
         TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
@@ -178,7 +178,7 @@ class ProfileViewSet(ListModelMixin,
     @detail_route(methods=['post'])
     def addemail(self, request, pk=None, *args, **kwargs):
         """
-        === Add an email to pk-user ===
+        === Add an email to pk-profile ===
 
         FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
         TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
@@ -206,7 +206,7 @@ class ProfileViewSet(ListModelMixin,
     @detail_route(methods=['post'])
     def rmemail(self, request, pk=None, *args, **kwargs):
         """
-        === Remove an email to pk-user ===
+        === Remove an email to pk-profile ===
 
         FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
         TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
@@ -234,7 +234,7 @@ class ProfileViewSet(ListModelMixin,
     @detail_route(methods=['post'])
     def addsocialnetwork(self, request, pk=None, *args, **kwargs):
         """
-        === Add a social network to pk-user ===
+        === Add a social network to pk-profile ===
 
         FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
         TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
@@ -268,7 +268,7 @@ class ProfileViewSet(ListModelMixin,
     @detail_route(methods=['post'])
     def rmsocialnetwork(self, request, pk=None, *args, **kwargs):
         """
-        === Remove a social network to pk-user ===
+        === Remove a social network to pk-profile ===
 
         FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
         TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
