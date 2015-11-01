@@ -1,0 +1,12 @@
+[
+  {
+    "model": "chat.Channel",
+    "pk": 1,
+    "fields": {
+      "name": "General",
+      "public": true,
+      "active": true,
+      "created": "2015-01-01T00:00:00.000000+00:00"
+    }
+  }
+]
