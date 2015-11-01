@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
+
 from django.contrib.auth import authenticate
-
 from rest_framework.authtoken.models import Token
-from rest_framework import serializers, exceptions
+from rest_framework.serializers import Serializer, ModelSerializer, CharField
+from rest_framework.exceptions import ValidationError
 
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=30)
-    password = serializers.CharField(max_length=128)
+
+class LoginSerializer(Serializer):
+    username = CharField(max_length=30)
+    password = CharField(max_length=128)
 
     def validate(self, attrs):
         username = attrs.get('username')
@@ -15,21 +18,22 @@ class LoginSerializer(serializers.Serializer):
             user = authenticate(username=username, password=password)
         else:
             error = 'You need to provide both username and password'
-            raise exceptions.ValidationError(error)
+            raise ValidationError(error)
 
         if user:
             if user.is_active is False:
                 error = 'This user account has been deactivated'
-                raise exceptions.ValidationError(error)
+                raise ValidationError(error)
 
         else:
             error = 'Those credentials do not match an user account'
-            raise exceptions.ValidationError(error)
+            raise ValidationError(error)
 
         attrs['user'] = user
         return attrs
 
-class TokenSerializer(serializers.ModelSerializer):
+
+class TokenSerializer(ModelSerializer):
     """
     Serializer for rest_framework Token model. Tokens are generated after
     a successful authentication registered in a session. HTTP requests need
@@ -38,4 +42,4 @@ class TokenSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Token
-        fields = ['key',]
+        fields = ['key', ]

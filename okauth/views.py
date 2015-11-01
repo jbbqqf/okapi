@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.contrib.auth import login, logout
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -6,11 +8,11 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
-from rest_framework.decorators import permission_classes, authentication_classes
+from rest_framework.decorators import permission_classes
 
 from okauth.serializers import LoginSerializer, TokenSerializer
+
 
 @permission_classes((AllowAny,))
 class LoginView(GenericAPIView):
@@ -36,6 +38,7 @@ class LoginView(GenericAPIView):
             'token': serialized_token.data['key'],
         }
         return Response(response_data)
+
 
 @permission_classes((AllowAny,))
 class CheckTokenView(APIView):
@@ -65,6 +68,7 @@ class CheckTokenView(APIView):
         except ObjectDoesNotExist:
             return Response(False)
 
+
 @permission_classes((AllowAny,))
 class LogoutView(APIView):
     """
@@ -91,9 +95,12 @@ class LogoutView(APIView):
         try:
             token = Token.objects.get(key=auth_token[1])
             token.delete()
+
         except:
-            message = {'message':
-                'Could not delete supplied token. Check your supplied data.'}
+            message = {
+                'message':
+                'Could not delete supplied token. Check your supplied data.'
+            }
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
         logout(request)
