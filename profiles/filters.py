@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from django_filters import (
-    FilterSet, CharFilter, DateFilter, BooleanFilter, NumberFilter)
+from django_filters import (FilterSet, CharFilter, DateFilter, BooleanFilter,
+                            NumberFilter, MethodFilter)
 from profiles.models import Profile
 from django.contrib.auth.models import User
 
@@ -55,8 +55,28 @@ class ProfileFilter(FilterSet):
                       label='note contain filter')
     gender = CharFilter(name='gender', label='filter on gender value')
     user = NumberFilter(name='user', label='user whose id is provided value')
+    tel = MethodFilter(action='tels_number_filter',
+                       label='contain filter on tels')
+    email = MethodFilter(action='emails_email_filter',
+                         label='contain filter on emails')
+    network = MethodFilter(action='social_networks_network_filter',
+                           label='profiles who have a network matching entry')
+    link = MethodFilter(action='social_networks_link_filter',
+                        label='contain filter on any network link')
+
+    def tels_number_filter(self, queryset, value):
+        return queryset.filter(tels__number__icontains=value)
+
+    def emails_email_filter(self, queryset, value):
+        return queryset.filter(emails__email__icontains=value)
+
+    def social_networks_network_filter(self, queryset, value):
+        return queryset.filter(social_networks__network=value)
+
+    def social_networks_link_filter(self, queryset, value):
+        return queryset.filter(social_networks__link__icontains=value)
 
     class Meta:
         model = Profile
         fields = ['nick', 'born_after', 'born_before', 'born_on', 'note',
-                  'gender', 'user', ]
+                  'gender', 'user', 'tel', 'email', 'network', 'link', ]
