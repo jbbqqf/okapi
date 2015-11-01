@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.models import User
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, StringRelatedField
 from profiles.models import Profile, PhoneNumber, Email, SocialNetwork
 
 
@@ -24,8 +24,8 @@ class SocialNetworkSerializer(ModelSerializer):
 
 
 class ProfileSerializer(ModelSerializer):
-    tels = PhoneNumberSerializer(many=True, read_only=True)
-    mails = EmailSerializer(many=True, read_only=True)
+    tels = StringRelatedField(many=True, read_only=True)
+    mails = StringRelatedField(many=True, read_only=True)
     social_networks = SocialNetworkSerializer(many=True, read_only=True)
 
     class Meta:
