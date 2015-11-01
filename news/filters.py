@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+
 from django_filters import FilterSet, CharFilter, NumberFilter, DateTimeFilter
-from rest_framework import filters
 from news.models import Event
+
 
 class EventFilter(FilterSet):
     author = NumberFilter(name='author', label='filter by author id')
@@ -30,4 +32,5 @@ class EventFilter(FilterSet):
     class Meta:
         model = Event
         fields = ['author', 'title', 'description', 'link', 'dday_on',
-                  'dday_on', 'dday_before', 'created_after', 'created_before',]
+                  'dday_on', 'dday_before', 'created_after',
+                  'created_before', ]
