@@ -1,6 +1,8 @@
-from django.shortcuts import render
+# -*- coding: utf-8 -*-
 
-from urllib2 import HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, build_opener, install_opener, urlopen, HTTPCookieProcessor
+from urllib2 import (HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler,
+                     build_opener, install_opener, urlopen,
+                     HTTPCookieProcessor)
 from cookielib import CookieJar
 
 from rest_framework.views import APIView
@@ -11,6 +13,7 @@ from rest_framework import status
 
 from grades.serializers import MyGradesSerializer
 from grades.parsers import SchoolGradesParser, SchoolYearsParser
+
 
 def install_wapiti_opener(domain, user, passwd):
     """
@@ -29,17 +32,18 @@ def install_wapiti_opener(domain, user, passwd):
     opener = build_opener(handler, HTTPCookieProcessor(cookiejar))
     install_opener(opener)
 
+
 def get_school_years_urls(url):
     """
     From default school grades page you have a list of all your years spent in
-    Telecom. This function list those years by reading available links via 
+    Telecom. This function list those years by reading available links via
     SchoolYearsParser and return a list of relative links.
     Ex: ['/Commun/ens/adm/pf/pgs/etudiant/consulterResSco.aspx?anSco=19&' \\
          'rangEtu=35 sur 83', link2, link3, ...]
     """
 
     list_school_years_html = urlopen(url)
-    
+
     list_school_years_data = ""
     for line in list_school_years_html.readlines():
         line = line.strip()
@@ -51,6 +55,7 @@ def get_school_years_urls(url):
     parser.close()
 
     return school_years_urls
+
 
 def find_string_between(string, sub_first, sub_last):
     """
@@ -74,6 +79,7 @@ def find_string_between(string, sub_first, sub_last):
 
     except ValueError:
         return ''
+
 
 def get_year_grades(year_grades_url):
     """
@@ -104,18 +110,19 @@ def get_year_grades(year_grades_url):
     # app. In this case, it would be school year 1995-1996 which could be
     # matching the first year of the first FIs.
     students = find_string_between(year_grades_url, 'sur ', None)
-    year_id = find_string_between(year_grades_url, 'anSco=', '&rangEtu') 
+    year_id = find_string_between(year_grades_url, 'anSco=', '&rangEtu')
 
     year_grades['students'] = students
     year_grades['year_id'] = year_id
 
     return year_grades
 
+
 @permission_classes((AllowAny,))
 class MyGradesView(APIView):
     """
     === Access your school grades via webservice ! ===
-    
+
     Anyone can access it since it does not provide anything else than what you
     can read on your wapiti pages. That's also why you need to provide your
     wapiti credentials each time your make a request here.

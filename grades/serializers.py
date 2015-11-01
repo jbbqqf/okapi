@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from urllib2 import HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, build_opener, HTTPError
-from rest_framework import serializers, exceptions
+from urllib2 import (HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler,
+                     build_opener, HTTPError)
+from rest_framework.serializers import Serializer, CharField
+from rest_framework.exceptions import ValidationError
 
-class MyGradesSerializer(serializers.Serializer):
+
+class MyGradesSerializer(Serializer):
     """
     Serialize and validate wapiti platform login credentials. Wapiti and Okapi
     credentials will often be the same, but it is not an obligation (ie.
@@ -15,8 +18,8 @@ class MyGradesSerializer(serializers.Serializer):
     than on backend.
     """
 
-    wapiti_username = serializers.CharField(max_length=30)
-    wapiti_password = serializers.CharField(max_length=128)
+    wapiti_username = CharField(max_length=30)
+    wapiti_password = CharField(max_length=128)
 
     def validate(self, attrs):
         """
@@ -29,7 +32,7 @@ class MyGradesSerializer(serializers.Serializer):
 
         if not(user and passwd):
             error = 'You need to provide a valid wapiti username and password'
-            raise exceptions.ValidationError(error)
+            raise ValidationError(error)
 
         domain = 'https://wapiti.telecom-lille.fr'
         authelv = '{}/authelv.php'.format(domain)
@@ -47,10 +50,11 @@ class MyGradesSerializer(serializers.Serializer):
         # TODO: try to handle errors more precisely even if wrong credentials
         # appears to be the most common one.
         except HTTPError:
-            error = 'Could not open {} with provided login data'.format(authelv)
+            error = 'Could not open {} with provided login data'.format(
+                authelv)
             if not user.startswith('elv/'):
                 error += ' (did you forget `elv/` before username ?)'
 
-            raise exceptions.ValidationError(error)
+            raise ValidationError(error)
 
         return attrs
