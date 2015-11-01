@@ -4,17 +4,20 @@ from django.contrib.auth.models import User
 
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.decorators import (
-    authentication_classes, permission_classes)
+    authentication_classes, permission_classes, detail_route)
 from rest_framework.authentication import (
-    SessionAuthentication, BasicAuthentication)
+    TokenAuthentication, SessionAuthentication)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
 from rest_framework.mixins import (
     ListModelMixin, RetrieveModelMixin, UpdateModelMixin)
+from rest_framework.response import Response
 
 from profiles.filters import ProfileFilter, UserFilter
 from profiles.models import Profile
-from profiles.serializers import ProfileSerializer, UserSerializer
+from profiles.serializers import (
+    ProfileSerializer, UserSerializer, PhoneNumberSerializer,
+    EmailSerializer, SocialNetworkSerializer)
 from profiles.permissions import IsProfileOwnerOrReadOnly
 
 
@@ -73,7 +76,7 @@ class UserViewSet(ReadOnlyModelViewSet):
     #     return Response(serializer.data)
 
 
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((TokenAuthentication, SessionAuthentication,))
 @permission_classes((IsAuthenticatedOrReadOnly, IsProfileOwnerOrReadOnly,))
 class ProfileViewSet(ListModelMixin,
                      RetrieveModelMixin,
@@ -113,3 +116,103 @@ class ProfileViewSet(ListModelMixin,
     filter_backends = (DjangoFilterBackend, SearchFilter,)
     search_fields = ('nick', 'note',)
     filter_class = ProfileFilter
+
+    @detail_route(methods=['post'])
+    def addnumber(self, request, pk=None, *args, **kwargs):
+        profile = self.get_object()
+
+        serializer = PhoneNumberSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        number = serializer.validated_data['number']
+
+        profile.tels.create(number=number)
+
+        message = {'message':
+                   'Profile {} has new number {}'.format(profile, number)}
+        return Response(message)
+
+    @detail_route(methods=['post'])
+    def rmnumber(self, request, pk=None, *args, **kwargs):
+        profile = self.get_object()
+
+        serializer = PhoneNumberSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        number = serializer.validated_data['number']
+
+        profile.tels.filter(number=number).delete()
+
+        message = {
+            'message':
+            'Profile {} no longer has {} number'.format(profile, number)
+        }
+        return Response(message)
+
+    @detail_route(methods=['post'])
+    def addemail(self, request, pk=None, *args, **kwargs):
+        profile = self.get_object()
+
+        serializer = EmailSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+
+        profile.mails.create(email=email)
+
+        message = {'message':
+                   'Profile {} has new email {}'.format(profile, email)}
+        return Response(message)
+
+    @detail_route(methods=['post'])
+    def rmemail(self, request, pk=None, *args, **kwargs):
+        profile = self.get_object()
+
+        serializer = EmailSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+
+        profile.mails.filter(email=email).delete()
+
+        message = {'message':
+                   'Profile {} no longer has {} email'.format(profile, email)}
+        return Response(message)
+
+    @detail_route(methods=['post'])
+    def addsocialnetwork(self, request, pk=None, *args, **kwargs):
+        profile = self.get_object()
+
+        serializer = SocialNetworkSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        network = serializer.validated_data['network']
+        link = serializer.validated_data['link']
+
+        profile.social_networks.create(network=network, link=link)
+
+        message = {
+            'message':
+            'Profile {} has new social network {} with link {}'.format(
+                profile, network, link)
+        }
+        return Response(message)
+
+    @detail_route(methods=['post'])
+    def rmsocialnetwork(self, request, pk=None, *args, **kwargs):
+        profile = self.get_object()
+
+        serializer = SocialNetworkSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        network = serializer.validated_data['network']
+        link = serializer.validated_data['link']
+
+        profile.social_networks.filter(network=network, link=link).delete()
+
+        message = {
+            'message':
+            'Profile {} no longer has social network {} with link {}'.format(
+                profile, network, link)
+        }
+        return Response(message)

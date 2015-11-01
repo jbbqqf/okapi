@@ -2,12 +2,12 @@
 
 from django.contrib import admin
 from profiles.models import (
-    Profile, ProfileForm, TelephonNumber, TelephonNumberForm, Email, EmailForm,
+    Profile, ProfileForm, PhoneNumber, PhoneNumberForm, Email, EmailForm,
     SocialNetwork, SocialNetworkForm)
 
 
-class TelephonNumberAdmin(admin.ModelAdmin):
-    form = TelephonNumberForm
+class PhoneNumberAdmin(admin.ModelAdmin):
+    form = PhoneNumberForm
     list_display = ['number', ]
     search_fields = ['number', ]
 
@@ -26,10 +26,10 @@ class SocialNetworkAdmin(admin.ModelAdmin):
 
 class ProfileAdmin(admin.ModelAdmin):
     form = ProfileForm
-    list_display = ['nick', 'birthday', 'note', 'gender', 'user', ]
+    list_display = ['user', 'nick', 'birthday', 'note', 'gender', ]
     search_fields = ['nick', 'birthday', 'note', ]
 
-admin.site.register(TelephonNumber, TelephonNumberAdmin)
+admin.site.register(PhoneNumber, PhoneNumberAdmin)
 admin.site.register(Email, EmailAdmin)
 admin.site.register(SocialNetwork, SocialNetworkAdmin)
 admin.site.register(Profile, ProfileAdmin)

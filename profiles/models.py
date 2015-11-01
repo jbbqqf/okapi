@@ -1,9 +1,74 @@
 # -*- coding: utf-8 -*-
 
-from django.db.models import (
-    Model, DateField, TextField, CharField, ForeignKey)
+from django.db.models import (Model, DateField, TextField, CharField,
+                              ForeignKey, ManyToManyField, EmailField)
 from django.forms import ModelForm
 from django.contrib.auth.models import User
+
+
+class PhoneNumber(Model):
+    """
+    Handle ManyToManyField tels on Profile
+
+    Do you want her 06 ?..
+    """
+
+    number = CharField(max_length=16)
+
+    def __unicode__(self):
+        return self.number
+
+
+class PhoneNumberForm(ModelForm):
+    class Meta:
+        model = PhoneNumber
+        fields = ['number', ]
+
+
+class Email(Model):
+    """
+    Handle ManyToManyField mails on Profile
+    """
+
+    email = EmailField()
+
+    def __unicode__(self):
+        return self.email
+
+
+class EmailForm(ModelForm):
+    class Meta:
+        model = Email
+        fields = ['email', ]
+
+
+class SocialNetwork(Model):
+    """
+    Handle ManyToManyField social_networks on Profile.
+
+    A social network is the association of a network name and a link to the
+    user profile.
+    """
+
+    NETWORKS = [
+        ('fb', 'facebook'),
+        ('tw', 'twitter'),
+        ('g+', 'google+'),
+        ('li', 'linkedin'),
+        ('ti', 'tindr'),
+    ]
+
+    network = CharField(max_length=2, choices=NETWORKS)
+    link = CharField(max_length=256)
+
+    def __unicode__(self):
+        return u'{}: {}'.format(self.network, self.link)
+
+
+class SocialNetworkForm(ModelForm):
+    class Meta:
+        model = SocialNetwork
+        fields = ['network', 'link', ]
 
 
 class Profile(Model):
@@ -28,6 +93,9 @@ class Profile(Model):
     birthday = DateField(blank=True, null=True)
     note = TextField(blank=True)
     gender = CharField(max_length=1, choices=GENDER, default=GENDER[0][0])
+    tels = ManyToManyField(PhoneNumber, blank=True)
+    mails = ManyToManyField(Email, blank=True)
+    social_networks = ManyToManyField(SocialNetwork, blank=True)
     user = ForeignKey(User)
 
     def __unicode__(self):
@@ -37,4 +105,5 @@ class Profile(Model):
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['nick', 'birthday', 'note', 'gender', 'user', ]
+        fields = ['user', 'nick', 'birthday', 'note', 'gender', 'tels',
+                  'mails', 'social_networks', ]
