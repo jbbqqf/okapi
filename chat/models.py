@@ -1,11 +1,12 @@
-from django.db import models
-from django.forms import ModelForm
+# -*- coding: utf-8 -*-
 
+from django.db.models import (Model, CharField, BooleanField, DateTimeField,
+                              ForeignKey)
+from django.forms import ModelForm
 from django.contrib.auth.models import User
 
-from profiles.models import User
 
-class Channel(models.Model):
+class Channel(Model):
     """
     One major criticism of karibou was the single chat instance. People could
     not have private conversations in groups. This Channel model allows not
@@ -15,16 +16,18 @@ class Channel(models.Model):
     default channel should always be available for everyone.
     """
 
-    name = models.CharField(max_length=32, unique=True)
-    public = models.BooleanField(default=True)
-    active = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True)
+    name = CharField(max_length=32, unique=True)
+    public = BooleanField(default=True)
+    active = BooleanField(default=True)
+    created = DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         if self.public:
             visibility = 'Public'
+
         else:
             visibility = 'Private'
+
         return '{} channel `{}`'.format(visibility, self.name)
 
     class Meta:
@@ -37,12 +40,14 @@ class Channel(models.Model):
             ('admin_channel', 'Admin Channel'),
         )
 
+
 class ChannelForm(ModelForm):
     class Meta:
         model = Channel
-        fields = ['name', 'public',]
+        fields = ['name', 'public', ]
 
-class Post(models.Model):
+
+class Post(Model):
     """
     Posts are lines of channels.
 
@@ -56,16 +61,17 @@ class Post(models.Model):
         ('s', 'score'),
     ]
 
-    date = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User)
-    type = models.CharField(max_length=1, choices=TYPE, default=TYPE[0][0])
-    content = models.CharField(max_length=512)
-    channel = models.ForeignKey(Channel)
+    date = DateTimeField(auto_now_add=True)
+    author = ForeignKey(User)
+    type = CharField(max_length=1, choices=TYPE, default=TYPE[0][0])
+    content = CharField(max_length=512)
+    channel = ForeignKey(Channel)
 
     def __unicode__(self):
         return u'[{}] {}: {}'.format(self.channel, self.author, self.content)
 
+
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ['author', 'type', 'content', 'channel',]
+        fields = ['author', 'type', 'content', 'channel', ]

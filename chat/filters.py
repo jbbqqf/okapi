@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from django_filters import FilterSet, CharFilter, DateTimeFilter, NumberFilter, BooleanFilter
+from django_filters import (FilterSet, CharFilter, DateTimeFilter,
+                            NumberFilter, BooleanFilter)
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import filters
 from chat.models import Post, Channel
+
 
 def get_readable_channel_ids(user):
     """
@@ -27,6 +29,7 @@ def get_readable_channel_ids(user):
 
     return unique_readable_ids
 
+
 class ReadableChannelFilter(filters.BaseFilterBackend):
     """
     All users cannot see what they want. They are restricted to see only
@@ -37,10 +40,12 @@ class ReadableChannelFilter(filters.BaseFilterBackend):
         readable_channel_ids = get_readable_channel_ids(request.user)
         return queryset.filter(id__in=readable_channel_ids)
 
+
 class ChannelFilter(FilterSet):
     name = CharFilter(name='name', lookup_type='icontains',
                       label='name contain filter')
     public = BooleanFilter(name='public', label='is public ?')
+
     ca_label = 'filter channels created after or on provided date / time'
     created_after = DateTimeFilter(name='date', lookup_type='gte',
                                    label=ca_label)
@@ -50,7 +55,8 @@ class ChannelFilter(FilterSet):
 
     class Meta:
         model = Channel
-        fields = ['name', 'public', 'created_after', 'created_before',]
+        fields = ['name', 'public', 'created_after', 'created_before', ]
+
 
 class ReadablePostFilter(filters.BaseFilterBackend):
     """
@@ -63,6 +69,7 @@ class ReadablePostFilter(filters.BaseFilterBackend):
         readable_channel_ids = get_readable_channel_ids(request.user)
         return queryset.filter(channel__in=readable_channel_ids)
 
+
 class PostFilter(FilterSet):
     author = CharFilter(name='author', lookup_type='icontains',
                         label='author contain filter')
@@ -73,6 +80,7 @@ class PostFilter(FilterSet):
                            label='filters posts sent on provided channel')
     afterid = NumberFilter(name='id', lookup_type='gt',
                            label='filter posts posted after given post id')
+
     dflabel = 'filter posts posted after or on provided date / time'
     datefrom = DateTimeFilter(name='date', lookup_type='gte', label=dflabel)
     dtlabel = 'filter posts posted before or on provided date / time'
@@ -82,4 +90,4 @@ class PostFilter(FilterSet):
 
     class Meta:
         model = Post
-        fields = ['author', 'type', 'content', 'datefrom', 'dateto',]
+        fields = ['author', 'type', 'content', 'datefrom', 'dateto', ]

@@ -1,39 +1,44 @@
-from django.shortcuts import render
+# -*- coding: utf-8 -*-
 
-from rest_framework import viewsets
-from rest_framework.generics import GenericAPIView
-from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.status import (
+    HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from rest_framework.decorators import authentication_classes, permission_classes, detail_route
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
+from rest_framework.decorators import (
+    authentication_classes, permission_classes, detail_route)
+from rest_framework.authentication import (
+    TokenAuthentication, SessionAuthentication)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
-from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
-from rest_framework.status import HTTP_400_BAD_REQUEST
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 
-from guardian.shortcuts import get_users_with_perms, get_groups_with_perms, assign_perm, remove_perm
+from guardian.shortcuts import (
+    get_users_with_perms, get_groups_with_perms, assign_perm, remove_perm)
 from guardian.utils import clean_orphan_obj_perms
 
-from chat.filters import PostFilter, ReadablePostFilter, ChannelFilter, ReadableChannelFilter
-from chat.serializers import ChannelSerializer, ChannelMemberSerializer, ChannelGroupSerializer, PostSerializer
+from chat.filters import (
+    PostFilter, ReadablePostFilter, ChannelFilter, ReadableChannelFilter)
+from chat.serializers import (ChannelSerializer, ChannelMemberSerializer,
+                              ChannelGroupSerializer, PostSerializer)
 from chat.models import Channel, Post
-from chat.permissions import IsChannelAdminOrReadOnly, IsChannelWriterOrReadOnly
+from chat.permissions import (IsChannelAdminOrReadOnly,
+                              IsChannelWriterOrReadOnly)
 from profiles.models import User
 from groups.models import Group
 
-@authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
-@permission_classes((IsAuthenticated, IsChannelAdminOrReadOnly,))
+
+@authentication_classes((TokenAuthentication, SessionAuthentication, ))
+@permission_classes((IsAuthenticated, IsChannelAdminOrReadOnly, ))
 class ChannelView(ListModelMixin,
                   RetrieveModelMixin,
-                  viewsets.GenericViewSet):
+                  GenericViewSet):
     """
     === Allows users to chat on different public or private channels ===
 
     Channels are Post containers filtering who can read/write where. They are
     mainly supposed to provide a channel for each promo and for each club group
-    as well as a default public channel. It is also possible to create a channel
-    where only two users can read/write for private messaging.
+    as well as a default public channel. It is also possible to create a
+    channel where only two users can read/write for private messaging.
 
     Default general channel which id is 1 is a channel where anyone can
     read/write. It's permissions cannot be edited by anyone.
@@ -60,7 +65,8 @@ class ChannelView(ListModelMixin,
 
     queryset = Channel.objects.all()
     serializer_class = ChannelSerializer
-    filter_backends = (ReadableChannelFilter, DjangoFilterBackend, SearchFilter,)
+    filter_backends = (ReadableChannelFilter,
+                       DjangoFilterBackend, SearchFilter,)
     search_fields = ('name',)
     filter_class = ChannelFilter
 
@@ -76,19 +82,19 @@ class ChannelView(ListModelMixin,
         assign_perm('write_channel', request.user, channel)
         assign_perm('admin_channel', request.user, channel)
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.delete()
         clean_orphan_obj_perms()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=HTTP_204_NO_CONTENT)
 
     @detail_route()
     def userperms(self, request, pk=None):
         """
         === Return a list of users with their permissions ===
-        
+
         Keep in mind that not only user permissions are checked, but also
         group dependant permissions.
 
@@ -106,7 +112,7 @@ class ChannelView(ListModelMixin,
             temp_perm['user'] = user.id
             temp_perm['permissions'] = perm
             serialized_perms.append(temp_perm)
-        
+
         return Response(serialized_perms)
 
     @detail_route()
@@ -128,7 +134,7 @@ class ChannelView(ListModelMixin,
     def adduser(self, request, pk=None):
         """
         === Add a user permission ===
-        
+
         FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
         TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
 
@@ -145,7 +151,7 @@ class ChannelView(ListModelMixin,
 
         channel = self.get_object()
 
-        serializer = ChannelMemberSerializer(data=request.data) 
+        serializer = ChannelMemberSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         user_id = serializer.data['user']
@@ -175,7 +181,7 @@ class ChannelView(ListModelMixin,
     def rmuser(self, request, pk=None):
         """
         === Remove a user permission ===
-        
+
         FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT. REFER TO FOLLOWING
         INSTRUCTIONS TO REQUEST ON THIS ROUTE :
 
@@ -231,14 +237,14 @@ class ChannelView(ListModelMixin,
             temp_perm['group'] = group.id
             temp_perm['permissions'] = perm
             serialized_perms.append(temp_perm)
-        
+
         return Response(serialized_perms)
 
     @detail_route(methods=['post'])
     def addgroup(self, request, pk=None):
         """
         === Add a group permission ===
-        
+
         FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT. REFER TO FOLLOWING
         INSTRUCTIONS TO REQUEST ON THIS ROUTE :
 
@@ -255,7 +261,7 @@ class ChannelView(ListModelMixin,
 
         channel = self.get_object()
 
-        serializer = ChannelGroupSerializer(data=request.data) 
+        serializer = ChannelGroupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         group_id = serializer.data['group']
@@ -285,7 +291,7 @@ class ChannelView(ListModelMixin,
     def rmgroup(self, request, pk=None):
         """
         === Remove a group permission ===
-        
+
         FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT. REFER TO FOLLOWING
         INSTRUCTIONS TO REQUEST ON THIS ROUTE :
 
@@ -326,11 +332,12 @@ class ChannelView(ListModelMixin,
         }
         return Response(message)
 
-@authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
-@permission_classes((IsAuthenticated, IsChannelWriterOrReadOnly,))
+
+@authentication_classes((TokenAuthentication, SessionAuthentication, ))
+@permission_classes((IsAuthenticated, IsChannelWriterOrReadOnly, ))
 class PostViewSet(ListModelMixin,
                   RetrieveModelMixin,
-                  viewsets.GenericViewSet):
+                  GenericViewSet):
     """
     === Post objects are messages broadcasted in channels  ===
 
@@ -339,8 +346,8 @@ class PostViewSet(ListModelMixin,
     to be able to read random cynical, sexist and hyper-sexualized
     conversations.
 
-    For the moment, the only type of post a connected user can POST are messages
-    (`m`) : it is automaticaly set. In the future we can imagine other
+    For the moment, the only type of post a connected user can POST are
+    messages (`m`) : it is automaticaly set. In the future we can imagine other
     applications being able to broadcast messages in channels such as games
     sending score notifications.
 
@@ -349,8 +356,8 @@ class PostViewSet(ListModelMixin,
     fields when performing GET requests.
 
     Since posts depend on channels they are broadcasted to, a user requesting
-    /chat/posts/ route will be only able to see posts refering to channels where
-    he has read_channel rights.
+    /chat/posts/ route will be only able to see posts refering to channels
+    where he has read_channel rights.
 
     Posts can not be edited... excepted by admins in the admin interface if
     necessary.
@@ -386,15 +393,15 @@ class PostViewSet(ListModelMixin,
 
         if channel.public is True:
             self.perform_create(serializer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=HTTP_201_CREATED)
 
         if request.user.has_perm('chat.write_channel', channel):
             self.perform_create(serializer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=HTTP_201_CREATED)
 
         message = {'detail':
                    'You do not have permission to perform this action.'}
-        return Response(message, status=status.HTTP_403_FORBIDDEN)
+        return Response(message, status=HTTP_403_FORBIDDEN)
 
     def perform_create(self, serializer):
         """

@@ -1,6 +1,9 @@
-from rest_framework import permissions
+# -*- coding: utf-8 -*-
 
-class IsChannelAdminOrReadOnly(permissions.BasePermission):
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+
+
+class IsChannelAdminOrReadOnly(BasePermission):
     """
     Custom permission to allow only users having admin_channel rights on a
     given channel to perform write actions.
@@ -12,7 +15,7 @@ class IsChannelAdminOrReadOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, channel):
-        if request.method in permissions.SAFE_METHODS:
+        if request.method in SAFE_METHODS:
             return True
 
         else:
@@ -22,14 +25,15 @@ class IsChannelAdminOrReadOnly(permissions.BasePermission):
 
             if channel.public is True:
                 return True
-            
+
             if request.user.has_perm('chat.admin_channel', channel):
                 return True
 
             else:
                 return False
 
-class IsChannelWriterOrReadOnly(permissions.BasePermission):
+
+class IsChannelWriterOrReadOnly(BasePermission):
     """
     Custom permission to allow only users having write_channel rights on a
     given channel to post messages on that channel.
@@ -38,7 +42,7 @@ class IsChannelWriterOrReadOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, post):
-        if request.method in permissions.SAFE_METHODS:
+        if request.method in SAFE_METHODS:
             return True
 
         else:
