@@ -2,6 +2,7 @@
 
 from subprocess import Popen, PIPE
 
+
 def cmd(*args):
     """Execute a shell command"""
 
