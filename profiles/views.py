@@ -1,24 +1,24 @@
-from django.shortcuts import render
+# -*- coding: utf-8 -*-
+
 from django.contrib.auth.models import User
 
-from rest_framework import viewsets, mixins
-from rest_framework.decorators import detail_route
-from rest_framework.generics import RetrieveUpdateAPIView
-from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
+from rest_framework.decorators import (
+    authentication_classes, permission_classes)
+from rest_framework.authentication import (
+    SessionAuthentication, BasicAuthentication)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.mixins import (
+    ListModelMixin, RetrieveModelMixin, UpdateModelMixin)
 
 from profiles.filters import ProfileFilter, UserFilter
 from profiles.models import Profile
 from profiles.serializers import ProfileSerializer, UserSerializer
 from profiles.permissions import IsProfileOwnerOrReadOnly
-from groups.models import Group
-from groups.serializers import GroupSerializer
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+
+class UserViewSet(ReadOnlyModelViewSet):
     """
     === Provide basic informations about students from Telecom's LDAP ===
 
@@ -68,21 +68,22 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     #     user = self.get_object()
 
     #     groups = get_user_groups(user)
-    #     
+    #
     #     serializer = GroupSerializer(groups, many=True)
     #     return Response(serializer.data)
+
 
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticatedOrReadOnly, IsProfileOwnerOrReadOnly,))
 class ProfileViewSet(ListModelMixin,
                      RetrieveModelMixin,
                      UpdateModelMixin,
-                     viewsets.GenericViewSet):
+                     GenericViewSet):
     """
     === Profiles bring additional informations about users ===
-    
-    The main difference between ~/profiles/ and ~/users/ route is that users can
-    edit their profiles but cannot change their core account informations.
+
+    The main difference between ~/profiles/ and ~/users/ route is that users
+    can edit their profiles but cannot change their core account informations.
 
     Only profile owner can perform PUT or PATCH requests. POST is not allowed
     because your profile is supposed to be unique and created when you log in

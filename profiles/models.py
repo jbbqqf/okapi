@@ -1,8 +1,12 @@
-from django.db import models
+# -*- coding: utf-8 -*-
+
+from django.db.models import (
+    Model, DateField, TextField, CharField, ForeignKey)
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 
-class Profile(models.Model):
+
+class Profile(Model):
     """
     Profiles provide some extra informations about it's user. Those fields are
     generic and should be enough in a first time. If you want to add other
@@ -20,16 +24,17 @@ class Profile(models.Model):
         ('u', 'unknown'),
     ]
 
-    nick = models.CharField(max_length=24)
-    birthday = models.DateField(blank=True, null=True)
-    note = models.TextField(blank=True)
-    gender = models.CharField(max_length=1, choices=GENDER, default=GENDER[0][0])
-    user = models.ForeignKey(User)
+    nick = CharField(max_length=24)
+    birthday = DateField(blank=True, null=True)
+    note = TextField(blank=True)
+    gender = CharField(max_length=1, choices=GENDER, default=GENDER[0][0])
+    user = ForeignKey(User)
 
     def __unicode__(self):
         return u'{}\'s profile'.format(self.user.username)
 
+
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['nick', 'birthday', 'note', 'gender', 'user']
+        fields = ['nick', 'birthday', 'note', 'gender', 'user', ]

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from django_filters import FilterSet, CharFilter, DateFilter, MethodFilter, BooleanFilter, NumberFilter
+from django_filters import (
+    FilterSet, CharFilter, DateFilter, BooleanFilter, NumberFilter)
 from profiles.models import Profile
-from groups.models import Group
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+
 
 class UserFilter(FilterSet):
     firstname = CharFilter(name='first_name', lookup_type='icontains',
@@ -17,7 +17,7 @@ class UserFilter(FilterSet):
 
     class Meta:
         model = User
-        fields = ['firstname', 'lastname', 'is_staff',]# 'group',]
+        fields = ['firstname', 'lastname', 'is_staff', ]  # 'group',]
 
     # def group_filter(self, queryset, value):
     #     """
@@ -41,6 +41,7 @@ class UserFilter(FilterSet):
     #     
     #     return users_in_group
 
+
 class ProfileFilter(FilterSet):
     nick = CharFilter(name='nick', lookup_type='icontains',
                       label='nick contain filter')
@@ -57,4 +58,5 @@ class ProfileFilter(FilterSet):
 
     class Meta:
         model = Profile
-        fields = ['nick', 'born_after', 'born_before', 'born_on', 'note', 'gender', 'user',]
+        fields = ['nick', 'born_after', 'born_before', 'born_on', 'note',
+                  'gender', 'user', ]
