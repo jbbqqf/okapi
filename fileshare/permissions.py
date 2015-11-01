@@ -1,19 +1,23 @@
-from rest_framework import permissions
+# -*- coding: utf-8 -*-
 
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 from fileshare.models import File, Directory
 
-class IsFileOwnerOrAdminOrReadOnly(permissions.BasePermission):
+
+class IsFileOwnerOrAdminOrReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, file):
-        if request.method in permissions.SAFE_METHODS:
+        if request.method in SAFE_METHODS:
             return True
 
         if request.user.is_staff is True or request.user == file.owner:
             return True
+
         else:
             return False
 
-class CanEditDirectory(permissions.BasePermission):
+
+class CanEditDirectory(BasePermission):
     """
     When a user tries to edit a directory, it is first checked that requested
     operation does not concern root directory, which is forbidden for anyone.
@@ -23,15 +27,18 @@ class CanEditDirectory(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, directory):
-        if request.method not in permissions.SAFE_METHODS:
+        if request.method not in SAFE_METHODS:
             if directory.parent is None:
                 return False
 
             if request.method == 'DELETE':
-                dir_childs = Directory.objects.filter(parent=directory).exists()
-                file_childs = File.objects.filter(parent=directory).exists()
+                dir_childs_query = Directory.objects.filter(parent=directory)
+                dir_childs_exist = dir_childs_query.exists()
 
-                if (dir_childs or file_childs) is True:
+                file_childs_query = File.objects.filter(parent=directory)
+                file_childs_exist = file_childs_query.exists()
+
+                if (dir_childs_exist or file_childs_exist) is True:
                     return False
 
         return True

@@ -1,13 +1,19 @@
-from django.contrib import admin
+# -*- coding: utf-8 -*-
+
+from django.contrib.admin import ModelAdmin
+from django.contrib.admin.site import register
 from fileshare.models import File, FileForm, Directory, DirectoryForm
 
-class DirectoryAdmin(admin.ModelAdmin):
+
+class DirectoryAdmin(ModelAdmin):
     form = DirectoryForm
-    list_display = ['name', 'parent', 'deleted', 'created', 'modified',]
+    list_display = ['name', 'parent', 'deleted', 'created', 'modified', ]
 
-class FileAdmin(admin.ModelAdmin):
+
+class FileAdmin(ModelAdmin):
     form = FileForm
-    list_display = ['name', 'parent', 'creator', 'deleted', 'created', 'modified',]
+    list_display = [
+        'name', 'parent', 'creator', 'deleted', 'created', 'modified', ]
 
-admin.site.register(Directory, DirectoryAdmin)
-admin.site.register(File, FileAdmin)
+register(Directory, DirectoryAdmin)
+register(File, FileAdmin)
