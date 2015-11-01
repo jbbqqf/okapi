@@ -119,6 +119,19 @@ class ProfileViewSet(ListModelMixin,
 
     @detail_route(methods=['post'])
     def addnumber(self, request, pk=None, *args, **kwargs):
+        """
+        === Add a phone number to pk-user ===
+
+        FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
+        TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * number : 15 charater maximum string (no regex validation)
+
+        You can add multiple times the same number but when you remove it, all
+        occurences will be removed.
+        """
+
         profile = self.get_object()
 
         serializer = PhoneNumberSerializer(data=request.data)
@@ -134,6 +147,19 @@ class ProfileViewSet(ListModelMixin,
 
     @detail_route(methods=['post'])
     def rmnumber(self, request, pk=None, *args, **kwargs):
+        """
+        === Remove a phone number to pk-user ===
+
+        FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
+        TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * number : 15 charater maximum string (no regex validation)
+
+        Even if there are multiple times the same number, all numbers are
+        removed when this route is called.
+        """
+
         profile = self.get_object()
 
         serializer = PhoneNumberSerializer(data=request.data)
@@ -151,6 +177,19 @@ class ProfileViewSet(ListModelMixin,
 
     @detail_route(methods=['post'])
     def addemail(self, request, pk=None, *args, **kwargs):
+        """
+        === Add an email to pk-user ===
+
+        FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
+        TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * email : email string (with regex validation)
+
+        You can add multiple times the same email but when you remove it, all
+        occurences will be removed.
+        """
+
         profile = self.get_object()
 
         serializer = EmailSerializer(data=request.data)
@@ -166,6 +205,19 @@ class ProfileViewSet(ListModelMixin,
 
     @detail_route(methods=['post'])
     def rmemail(self, request, pk=None, *args, **kwargs):
+        """
+        === Remove an email to pk-user ===
+
+        FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
+        TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * email : email string (no regex validation)
+
+        Even if there are multiple times the same email, all emails are
+        removed when this route is called.
+        """
+
         profile = self.get_object()
 
         serializer = EmailSerializer(data=request.data)
@@ -181,6 +233,21 @@ class ProfileViewSet(ListModelMixin,
 
     @detail_route(methods=['post'])
     def addsocialnetwork(self, request, pk=None, *args, **kwargs):
+        """
+        === Add a social network to pk-user ===
+
+        FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
+        TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * network : 'fb', 'tw', 'g+', 'li' or 'ti'
+          * link : 256 maximum character string link to the user profile (no
+                   validation yet)
+
+        You can add multiple times the same social network but when you remove
+        it, all occurences will be removed.
+        """
+
         profile = self.get_object()
 
         serializer = SocialNetworkSerializer(data=request.data)
@@ -200,6 +267,21 @@ class ProfileViewSet(ListModelMixin,
 
     @detail_route(methods=['post'])
     def rmsocialnetwork(self, request, pk=None, *args, **kwargs):
+        """
+        === Remove a social network to pk-user ===
+
+        FORMS PROVIDED BY AUTO-GENERATED DOCUMENTATION ARE NOT CORRECT. REFER
+        TO FOLLOWING INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You need to provide those fields in POST parameters :
+          * network : 'fb', 'tw', 'g+', 'li' or 'ti'
+          * link : 256 maximum character string link to the user profile (no
+                   validation yet)
+
+        Even if there are multiple times the same social network, all social
+        networks are removed when this route is called.
+        """
+
         profile = self.get_object()
 
         serializer = SocialNetworkSerializer(data=request.data)

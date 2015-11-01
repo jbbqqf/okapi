@@ -76,10 +76,9 @@ class Profile(Model):
     Profiles provide some extra informations about it's user. Those fields are
     generic and should be enough in a first time. If you want to add other
     fields (avatar for instance), you should create a new app to avoid breaking
-    retro-compatibility. Or if you do so, make sure it has minor impact on UIs.
-
-    Fields like custom e-mail or mobile have been intentionnaly not provided
-    because it's more likely a manytomany relation.
+    retro-compatibility. Or if you do so because you think it has been
+    forgotten but should be part of the profile core, make sure to notify UI
+    developers.
     """
 
     GENDER = [
