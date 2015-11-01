@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Django settings for okapi project.
 
@@ -116,7 +118,7 @@ USE_TZ = True
 
 # guardian
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', # default
+    'django.contrib.auth.backends.ModelBackend',  # default
     'guardian.backends.ObjectPermissionBackend',
 )
 
