@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from django.db import models
 from django.forms import ModelForm
-from django.contrib.auth.models import User
 from django.contrib.auth.models import Group as djanGroup
+
 
 class Group(djanGroup):
     """
@@ -22,10 +24,11 @@ class Group(djanGroup):
     def __unicode__(self):
         return self.name
 
+
 class GroupForm(ModelForm):
     class Meta:
         model = Group
-        fields = ['name', 'url', 'mailing', 'description', 'parent',]
+        fields = ['name', 'url', 'mailing', 'description', 'parent', ]
 
 
 # def get_group_members(group):

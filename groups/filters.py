@@ -3,6 +3,7 @@
 from django_filters import FilterSet, CharFilter, NumberFilter
 from groups.models import Group
 
+
 class GroupFilter(FilterSet):
     name = CharFilter(name='name', lookup_type='icontains',
                       label='name contain filter')
@@ -17,4 +18,4 @@ class GroupFilter(FilterSet):
 
     class Meta:
         model = Group
-        fields = ['name', 'url', 'mailing', 'description', 'parent',]
+        fields = ['name', 'url', 'mailing', 'description', 'parent', ]
