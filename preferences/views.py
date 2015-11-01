@@ -1,20 +1,25 @@
-from django.shortcuts import render
+# -*- coding: utf-8 -*-
+
 from django.db import IntegrityError
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin
+from rest_framework.mixins import (
+    ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin)
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
+from rest_framework.decorators import (
+    authentication_classes, permission_classes)
+from rest_framework.authentication import (
+    TokenAuthentication, SessionAuthentication)
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
 
 from preferences.filters import UserInterfaceFilter, UserPrefFilter
 from preferences.models import UserInterface, UserPref
 from preferences.serializers import UserInterfaceSerializer, UserPrefSerializer
 
-@authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
+
+@authentication_classes((TokenAuthentication, SessionAuthentication,))
 @permission_classes((IsAuthenticated,))
 class UserInterfaceView(ListModelMixin,
                         RetrieveModelMixin,
@@ -48,7 +53,8 @@ class UserInterfaceView(ListModelMixin,
     search_fields = ('name', 'comment',)
     filter_class = UserInterfaceFilter
 
-@authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
+
+@authentication_classes((TokenAuthentication, SessionAuthentication,))
 @permission_classes((IsAuthenticated,))
 class UserPrefView(ListModelMixin,
                    RetrieveModelMixin,

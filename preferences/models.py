@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from django.db import models
 from django.forms import ModelForm
-from django.db import IntegrityError
-
 from django.contrib.auth.models import User
+
 
 class UserInterface(models.Model):
     """
@@ -17,10 +18,12 @@ class UserInterface(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class UserInterfaceForm(ModelForm):
     class Meta:
         model = UserInterface
-        fields = ['name', 'comment',]
+        fields = ['name', 'comment', ]
+
 
 class UserPref(models.Model):
     """
@@ -34,7 +37,8 @@ class UserPref(models.Model):
     class Meta:
         unique_together = ('user', 'ui',)
 
+
 class UserPrefForm(ModelForm):
     class Meta:
         model = UserPref
-        fields = ['user', 'ui', 'conf',]
+        fields = ['user', 'ui', 'conf', ]

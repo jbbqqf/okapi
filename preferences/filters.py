@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+
 from django_filters import FilterSet, CharFilter, NumberFilter, MethodFilter
-from rest_framework import filters
 from preferences.models import UserPref, UserInterface
+
 
 class UserInterfaceFilter(FilterSet):
     name = CharFilter(name='name', lookup_type='icontains',
@@ -10,10 +12,12 @@ class UserInterfaceFilter(FilterSet):
 
     class Meta:
         model = UserInterface
-        fields = ['name', 'comment',]
+        fields = ['name', 'comment', ]
+
 
 class UserPrefFilter(FilterSet):
-    ui_id = NumberFilter(name='ui', label='filter preference by ui with its id')
+    ui_id = NumberFilter(name='ui',
+                         label='filter preference by ui with its id')
     ui = MethodFilter(action='ui_name_filter',
                       label='ui name contain filter')
     conf = CharFilter(name='conf', lookup_type='icontains',
@@ -24,4 +28,4 @@ class UserPrefFilter(FilterSet):
 
     class Meta:
         model = UserPref
-        fields = ['ui_id', 'ui', 'conf',]
+        fields = ['ui_id', 'ui', 'conf', ]

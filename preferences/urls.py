@@ -1,13 +1,14 @@
+# -*- coding: utf-8 -*-
+
 from django.conf.urls import url, patterns, include
-
-from rest_framework import routers
-
+from rest_framework.routers import DefaultRouter
 from preferences.views import UserInterfaceView, UserPrefView
 
-router = routers.DefaultRouter()
+router = DefaultRouter()
 router.register(r'uis', UserInterfaceView, base_name='userinterfaces')
 router.register(r'myprefs', UserPrefView, base_name='myprefs')
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^', include(router.urls)),
 )
