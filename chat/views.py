@@ -23,6 +23,7 @@ from chat.serializers import (ChannelSerializer, ChannelMemberSerializer,
 from chat.models import Channel, Post
 from chat.permissions import (IsChannelAdminOrReadOnly,
                               IsChannelWriterOrReadOnly)
+from chat.pagination import PostsPagination
 from profiles.models import User
 from groups.models import Group
 
@@ -384,6 +385,7 @@ class PostViewSet(ListModelMixin,
     filter_backends = (ReadablePostFilter, DjangoFilterBackend, SearchFilter,)
     search_fields = ('content',)
     filter_class = PostFilter
+    pagination_class = PostsPagination
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
