@@ -13,6 +13,7 @@ from rest_framework.response import Response
 
 from library.models import PressReview
 from library.serializers import PressReviewSerializer
+from library.filters import PressReviewFilter
 
 
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
@@ -22,6 +23,7 @@ class PressReviewView(ReadOnlyModelViewSet):
     serializer_class = PressReviewSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter,)
     search_fields = ['date', ]
+    filter_class = PressReviewFilter
 
     @list_route(methods=['get'])
     def today(self, request):
