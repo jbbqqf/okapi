@@ -25,6 +25,14 @@ class Command(BaseCommand):
             help='Answers y for each new review import prompt',
             action='store_true'
         )
+        parser.add_argument(
+            '--user',
+            help='Whippet user to perform requests'
+        )
+        parser.add_argument(
+            '--password',
+            help='Whippet password to perform requests'
+        )
 
     def handle(self, *args, **options):
         if options['today']:
@@ -42,8 +50,18 @@ class Command(BaseCommand):
         DOMAIN = 'https://whippet.telecom-lille.fr'
         LOGIN_URL = '{}/login/index.php'.format(DOMAIN)
         DATA_URL = '{}/mod/book/view.php?id=4235'.format(DOMAIN)
-        user = raw_input('user: ')
-        password = getpass('pass: ')
+
+        if options['user']:
+            user = options['user']
+
+        else:
+            user = raw_input('user: ')
+
+        if options['password']:
+            password = options['password']
+
+        else:
+            password = getpass('pass: ')
 
         pressreviews_dir = join(settings.MEDIA_ROOT, 'pressreviews')
         if isdir(pressreviews_dir) is False:
