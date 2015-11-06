@@ -132,6 +132,8 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = '/home/apps/okapi/www/media'
 
+MEDIA_URL = '/media/'
+
 # REST framework custom settings
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
