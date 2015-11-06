@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from library.models import PressReview
 from library.serializers import PressReviewSerializer
 from library.filters import PressReviewFilter
+from library.pagination import PressReviewPagination
 
 
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
@@ -24,6 +25,7 @@ class PressReviewView(ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter,)
     search_fields = ['date', ]
     filter_class = PressReviewFilter
+    pagination_class = PressReviewPagination
 
     @list_route(methods=['get'])
     def today(self, request):
