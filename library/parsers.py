@@ -5,11 +5,20 @@ from datetime import date
 
 
 class PressReviewPDFParser(HTMLParser):
+    """
+    HTMLParser implementation to extract press reviews pdf link from a press
+    review month page.
+    """
+
     def __init__(self):
         HTMLParser.__init__(self)
 
+        # Structure receiving urls. At the end it should look like :
+        # {"MonthA": {"pdf_name": "pdf_url", ...}, "MonthB": ...}
         self.pdf_urls = {}
 
+        # Toggle True/False when data are interesting, which is on the first
+        # table tag
         self.parsing_pdf_urls = False
         self.table_counter = 0
 
@@ -25,6 +34,8 @@ class PressReviewPDFParser(HTMLParser):
         if tag == 'a':
             for attr, value in attrs:
                 if attr == 'href':
+                    # splitting to get only the last part of the url, aka
+                    # the filename
                     splited_url = value.split('/')
                     pdf_name = splited_url[-1]
                     self.pdf_urls[pdf_name] = value
@@ -42,21 +53,37 @@ class PressReviewPDFParser(HTMLParser):
 
 
 class PressReviewMonthsParser(HTMLParser):
+    """
+    HTMLParser implementation to extract whippet url links giving access to
+    each press review month page.
+    """
+
     def __init__(self):
         HTMLParser.__init__(self)
 
+        # Handle_data is triggered even outside of tags. current_tag records
+        # the most opened tags, and is set to None when a tag is closed.
         self.current_tag = None
 
+        # Structure receiving urls. At the end it should look like :
+        # {"Year": {"MonthA", "MonthB", ...}, "Year2": ...}
         self.urls = {}
         self.current_year = None
 
+        # Toggle True/False when data are interesting, which is on the first
+        # div tag with a class attribute with value `book_toc_bullets clearfix`
         self.parsing_toc = False
+
         self.in_year = False
         self.in_month = False
 
         self.years = self.generate_years_range(2014)
 
     def generate_years_range(self, earliest_year):
+        """
+        Generate a list of years in strings from earliest_year to current_year.
+        """
+
         this_year = date.today().year
 
         years = []
@@ -76,12 +103,14 @@ class PressReviewMonthsParser(HTMLParser):
         self.current_tag = tag
 
         if self.in_year is True:
+            # Each a tag in a year section is a month
             if tag == 'a':
                 month = None
                 url = None
                 for attr, value in attrs:
                     if attr == 'title':
                         month = value
+
                     elif attr == 'href':
                         url = value
 
