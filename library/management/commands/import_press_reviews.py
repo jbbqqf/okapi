@@ -8,8 +8,8 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from library.models import PressReview
 
-from _private import (
-    init_whippet_session, get_months_urls, get_pdfs_urls, pdf_name_to_date)
+from _private import get_months_urls, get_pdfs_urls, pdf_name_to_date
+from common.http import init_whippet_session
 
 
 class Command(BaseCommand):

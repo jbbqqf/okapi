@@ -3,6 +3,7 @@
 from urllib2 import (HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler,
                      build_opener, install_opener, HTTPCookieProcessor)
 from cookielib import CookieJar
+from requests import session
 
 
 def install_wapiti_opener(domain, user, passwd):
@@ -21,3 +22,24 @@ def install_wapiti_opener(domain, user, passwd):
 
     opener = build_opener(handler, HTTPCookieProcessor(cookiejar))
     install_opener(opener)
+
+
+def init_whippet_session(login_url, user, password):
+    s = session()
+
+    authent_formdata = {
+        'username': user,
+        'password': password
+    }
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    s.post(
+        login_url,
+        data=authent_formdata,
+        headers=headers,
+        allow_redirects=False
+    )
+
+    return s
