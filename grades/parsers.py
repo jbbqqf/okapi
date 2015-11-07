@@ -334,6 +334,86 @@ class SchoolGradesParser(HTMLParser):
                     self.handle_examdata(data)
 
 
+class SchoolJuriesParser(HTMLParser):
+    """
+    HTMLParser implementation to extract wapiti published informations about
+    juries which can be found at an url like `https://wapiti.telecom-lille.fr/-
+    Commun/ens/adm/pf/pgs/etudiant/consulterJury.aspx?anSco=22`.
+
+    You should find one jury per page for most of those pages, but sometimes
+    it's not the case... This could be investigated...
+    """
+
+    def __init__(self):
+        HTMLParser.__init__(self)
+
+        self.juries = []
+        self.current_jury = {}
+
+        self.current_tag = None
+
+        self.categories = [
+            'date',
+            'decision',
+            'comment',
+        ]
+        self.current_category = -1
+        self.waiting_category_data = False
+
+        self.parsing_juries = False
+        self.table_counter = 0
+        self.in_juries_table = False
+
+    def handle_starttag(self, tag, attrs):
+        if self.parsing_juries is False:
+            if tag == 'table':
+                self.table_counter += 1
+                if self.table_counter == 3:
+                    self.in_juries_table = True
+
+                return
+
+            if self.in_juries_table is True:
+                if tag == 'tr':
+                    self.parsing_juries = True
+
+            return
+
+        self.current_tag = tag
+
+        if tag == 'td':
+            self.current_category += 1
+            self.waiting_category_data = True
+
+    def handle_endtag(self, tag):
+        if self.parsing_juries is True:
+            self.current_tag = None
+
+            if tag == 'table':
+                if self.table_counter == 3:
+                    self.parsing_juries = False
+
+            elif tag == 'tr':
+                if self.current_jury:  # True if not empty
+                    self.juries.append(self.current_jury)
+                    self.current_jury = {}
+                    self.current_category = -1
+
+            elif tag == 'td':
+                self.waiting_category_data = False
+
+    def handle_data(self, data):
+        if self.parsing_juries is True:
+            if self.current_tag is not None:
+                if self.waiting_category_data is True:
+                    data = unicode(data, 'utf-8')
+                    data = data.strip()
+
+                    if data != '':
+                        category = self.categories[self.current_category]
+                        self.current_jury[category] = data
+
+
 class SchoolYearsParser(HTMLParser):
     """
     This parser has been implemented to extract school years URL links listed

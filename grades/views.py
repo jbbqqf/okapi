@@ -11,32 +11,42 @@ from rest_framework import status
 
 from common.http import install_wapiti_opener
 from common.common import find_string_between
-from grades.serializers import MyGradesSerializer
-from grades.parsers import SchoolGradesParser, SchoolYearsParser
+from grades.serializers import WapitiLoginSerializer
+from grades.parsers import (SchoolGradesParser, SchoolJuriesParser,
+                            SchoolYearsParser)
 
 
-def get_grades_years_urls(url):
+def get_years_urls(url):
     """
     From default school grades page you have a list of all your years spent in
     Telecom. This function list those years by reading available links via
-    SchoolYearsParser and return a list of relative links.
-    Ex: ['/Commun/ens/adm/pf/pgs/etudiant/consulterResSco.aspx?anSco=19&' \\
-         'rangEtu=35 sur 83', link2, link3, ...]
+    SchoolYearsParser and return a dictionnary with keys being ['grades',
+    'juries', 'certifications'] and values a list of relative links.
+
+    Ex: {'grades': ['/Commun/ens/adm/pf/pgs/etudiant/consulterResSco.aspx?' \\
+                    'anSco=19&rangEtu=35 sur 83', link2, link3, ...],
+         'juries': [link1, link2, ...],
+         'certifications': [link1, link2, ...]}
     """
 
-    list_grades_years_html = urlopen(url)
+    list_years_html = urlopen(url)
 
-    list_grades_years_data = ""
-    for line in list_grades_years_html.readlines():
+    list_years_data = ""
+    for line in list_years_html.readlines():
         line = line.strip()
-        list_grades_years_data += line
+        list_years_data += line
 
     parser = SchoolYearsParser()
-    parser.feed(list_grades_years_data)
-    grades_years_urls = parser.grades_years
+    parser.feed(list_years_data)
+
+    years_urls = {}
+    years_urls['grades'] = parser.grades_years
+    years_urls['juries'] = parser.juries_years
+    years_urls['certifications'] = parser.certifications_years
+
     parser.close()
 
-    return grades_years_urls
+    return years_urls
 
 
 def get_year_grades(year_grades_url):
@@ -76,6 +86,21 @@ def get_year_grades(year_grades_url):
     return year_grades
 
 
+def get_year_juries(year_juries_url):
+    year_juries_html = urlopen(year_juries_url)
+
+    year_juries_data = ""
+    for line in year_juries_html.readlines():
+        year_juries_data += line
+
+    parser = SchoolJuriesParser()
+    parser.feed(year_juries_data)
+    year_juries = parser.juries
+    parser.close()
+
+    return year_juries
+
+
 @permission_classes((AllowAny,))
 class MyGradesView(APIView):
     """
@@ -112,7 +137,7 @@ class MyGradesView(APIView):
         built-in views to test the API... sorry for the inconvenience...
         """
 
-        serializer = MyGradesSerializer(data=request.data)
+        serializer = WapitiLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         wapiti_url = settings.WAPITI['url']
@@ -125,7 +150,7 @@ class MyGradesView(APIView):
 
         years_overview_url = '{}{}'.format(
             wapiti_url, settings.WAPITI['years_overview'])
-        grades_years_urls = get_grades_years_urls(years_overview_url)
+        grades_years_urls = get_years_urls(years_overview_url)['grades']
 
         grades = []
         for school_year_url in grades_years_urls:
@@ -134,3 +159,30 @@ class MyGradesView(APIView):
             grades.append(year_grades)
 
         return Response(grades, status=status.HTTP_200_OK)
+
+
+@permission_classes((AllowAny,))
+class MyJuriesView(APIView):
+    def get(self, request, *args, **kwargs):
+        serializer = WapitiLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        wapiti_url = settings.WAPITI['url']
+        user = serializer.validated_data['wapiti_username']
+        passwd = serializer.validated_data['wapiti_password']
+        install_wapiti_opener(wapiti_url, user, passwd)
+
+        wapiti_login_url = '{}{}'.format(wapiti_url, settings.WAPITI['login'])
+        urlopen(wapiti_login_url)
+
+        years_overview_url = '{}{}'.format(
+            wapiti_url, settings.WAPITI['years_overview'])
+        juries_years_urls = get_years_urls(years_overview_url)['juries']
+
+        juries = []
+        for school_year_url in juries_years_urls:
+            year_juries_url = '{}{}'.format(wapiti_url, school_year_url)
+            year_juries = get_year_juries(year_juries_url)
+            juries.append(year_juries)
+
+        return Response(juries, status=status.HTTP_200_OK)

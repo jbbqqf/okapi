@@ -6,7 +6,7 @@ from rest_framework.serializers import Serializer, CharField
 from rest_framework.exceptions import ValidationError
 
 
-class MyGradesSerializer(Serializer):
+class WapitiLoginSerializer(Serializer):
     """
     Serialize and validate wapiti platform login credentials. Wapiti and Okapi
     credentials will often be the same, but it is not an obligation (ie.
