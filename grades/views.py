@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from urllib2 import (HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler,
-                     build_opener, install_opener, urlopen,
-                     HTTPCookieProcessor)
-from cookielib import CookieJar
-
+from urllib2 import urlopen
 from django.conf import settings
 
 from rest_framework.views import APIView
@@ -13,26 +9,10 @@ from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 
+from common.http import install_wapiti_opener
+from common.common import find_string_between
 from grades.serializers import MyGradesSerializer
 from grades.parsers import SchoolGradesParser, SchoolYearsParser
-
-
-def install_wapiti_opener(domain, user, passwd):
-    """
-    urllib2 can open pages with a default opener : no user, no password, just a
-    query on an http resource. But creating a custom opener allows to give auto
-    credentials and handle cookies, which we need due to the asp awful
-    application implementation.
-    """
-
-    cookiejar = CookieJar()
-
-    password_manager = HTTPPasswordMgrWithDefaultRealm()
-    password_manager.add_password(None, domain, user, passwd)
-    handler = HTTPBasicAuthHandler(password_manager)
-
-    opener = build_opener(handler, HTTPCookieProcessor(cookiejar))
-    install_opener(opener)
 
 
 def get_school_years_urls(url):
@@ -57,30 +37,6 @@ def get_school_years_urls(url):
     parser.close()
 
     return school_years_urls
-
-
-def find_string_between(string, sub_first, sub_last):
-    """
-    Common function to find a substring surrounded by sub_first and sub_last.
-    sub_last can be set to None if for example you expect to isolate something
-    at the end of the string. In this case, the whole string after sub_first is
-    returned.
-
-    In case submitted data raises a ValueError, an empty string will be
-    returned instead.
-    """
-
-    try:
-        start = string.index(sub_first) + len(sub_first)
-        if sub_last is not None:
-            end = string.index(sub_last, start)
-            return string[start:end]
-
-        else:
-            return string[start:]
-
-    except ValueError:
-        return ''
 
 
 def get_year_grades(year_grades_url):
