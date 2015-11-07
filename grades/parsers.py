@@ -10,7 +10,7 @@ class SchoolGradesParser(HTMLParser):
     year grades recap page like `https://wapiti.telecom-lille.fr/Commun/ens/-
     adm/pf/pgs/etudiant/consulterResSco.aspx?anSco=22&rangEtu= sur 120`.
 
-    This implementation is very hugly, like the html page themselves.
+    This implementation is very ugly, like the html page themselves.
     """
 
     def __init__(self):
@@ -343,19 +343,27 @@ class SchoolYearsParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
 
-        # Structure to read from the outside to get parsed data.
-        self.years = []
+        # Structures to read from the outside to get parsed data.
+        self.grades_years = []
+        self.juries_years = []
+        self.certifications_years = []
 
     def handle_starttag(self, tag, attrs):
         """
         Check if current tag is an hyperlink tag (<a>) having an href attribute
         in which `consulterResSco.aspx` is present.
 
-        It is hugly, but it works !
+        It is ugly, but it works !
         """
 
         if tag == 'a':
             for attr, value in attrs:
                 if attr == 'href':
                     if 'consulterResSco.aspx' in value:
-                        self.years.append(value)
+                        self.grades_years.append(value)
+
+                    elif 'consulterJury.aspx' in value:
+                        self.juries_years.append(value)
+
+                    elif 'consulterExamen.aspx' in value:
+                        self.certifications_years.append(value)

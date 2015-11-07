@@ -15,7 +15,7 @@ from grades.serializers import MyGradesSerializer
 from grades.parsers import SchoolGradesParser, SchoolYearsParser
 
 
-def get_school_years_urls(url):
+def get_grades_years_urls(url):
     """
     From default school grades page you have a list of all your years spent in
     Telecom. This function list those years by reading available links via
@@ -24,19 +24,19 @@ def get_school_years_urls(url):
          'rangEtu=35 sur 83', link2, link3, ...]
     """
 
-    list_school_years_html = urlopen(url)
+    list_grades_years_html = urlopen(url)
 
-    list_school_years_data = ""
-    for line in list_school_years_html.readlines():
+    list_grades_years_data = ""
+    for line in list_grades_years_html.readlines():
         line = line.strip()
-        list_school_years_data += line
+        list_grades_years_data += line
 
     parser = SchoolYearsParser()
-    parser.feed(list_school_years_data)
-    school_years_urls = parser.years
+    parser.feed(list_grades_years_data)
+    grades_years_urls = parser.grades_years
     parser.close()
 
-    return school_years_urls
+    return grades_years_urls
 
 
 def get_year_grades(year_grades_url):
@@ -125,10 +125,10 @@ class MyGradesView(APIView):
 
         years_overview_url = '{}{}'.format(
             wapiti_url, settings.WAPITI['years_overview'])
-        school_years_urls = get_school_years_urls(years_overview_url)
+        grades_years_urls = get_grades_years_urls(years_overview_url)
 
         grades = []
-        for school_year_url in school_years_urls:
+        for school_year_url in grades_years_urls:
             year_grades_url = '{}{}'.format(wapiti_url, school_year_url)
             year_grades = get_year_grades(year_grades_url)
             grades.append(year_grades)
