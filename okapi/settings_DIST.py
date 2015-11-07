@@ -147,3 +147,16 @@ REST_FRAMEWORK = {
 
 # CORS Headers
 CORS_ORIGIN_ALLOW_ALL = True
+
+# CUSTOM
+WHIPPET = {
+    'url': 'https://whippet.telecom-lille.fr',
+    'login': '/login/index.php',
+    'press_review_home': '/mod/book/view.php?id=4235',
+}
+
+WAPITI = {
+    'url': 'https://wapiti.telecom-lille.fr',
+    'login': '/authelv.php',
+    'years_overview': '/Commun/ens/adm/pf/pgs/login.aspx',
+}

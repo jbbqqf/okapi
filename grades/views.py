@@ -5,6 +5,8 @@ from urllib2 import (HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler,
                      HTTPCookieProcessor)
 from cookielib import CookieJar
 
+from django.conf import settings
+
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import permission_classes
@@ -157,21 +159,21 @@ class MyGradesView(APIView):
         serializer = MyGradesSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        domain = 'https://wapiti.telecom-lille.fr'
+        wapiti_url = settings.WAPITI['url']
         user = serializer.validated_data['wapiti_username']
         passwd = serializer.validated_data['wapiti_password']
-        install_wapiti_opener(domain, user, passwd)
+        install_wapiti_opener(wapiti_url, user, passwd)
 
-        authelv = '{}/authelv.php'.format(domain)
-        urlopen(authelv)
+        wapiti_login_url = '{}{}'.format(wapiti_url, settings.WAPITI['login'])
+        urlopen(wapiti_login_url)
 
-        years_overview_url = '{}/Commun/ens/adm/pf/pgs/login.aspx'.format(
-            domain)
+        years_overview_url = '{}{}'.format(
+            wapiti_url, settings.WAPITI['years_overview'])
         school_years_urls = get_school_years_urls(years_overview_url)
 
         grades = []
         for school_year_url in school_years_urls:
-            year_grades_url = '{}{}'.format(domain, school_year_url)
+            year_grades_url = '{}{}'.format(wapiti_url, school_year_url)
             year_grades = get_year_grades(year_grades_url)
             grades.append(year_grades)
 

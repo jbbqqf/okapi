@@ -47,9 +47,10 @@ class Command(BaseCommand):
         else:
             yes = False
 
-        DOMAIN = 'https://whippet.telecom-lille.fr'
-        LOGIN_URL = '{}/login/index.php'.format(DOMAIN)
-        DATA_URL = '{}/mod/book/view.php?id=4235'.format(DOMAIN)
+        whippet_url = settings.WHIPPET['url']
+        login_url = '{}{}'.format(whippet_url, settings.WHIPPET['login'])
+        data_url = '{}{}'.format(
+            whippet_url, settings.WHIPPET['press_review_home'])
 
         if options['user']:
             user = options['user']
@@ -67,16 +68,14 @@ class Command(BaseCommand):
         if isdir(pressreviews_dir) is False:
             makedirs(pressreviews_dir)
 
-        s = init_whippet_session(LOGIN_URL, user, password)
-        periods_urls = get_months_urls(s, DATA_URL)
+        s = init_whippet_session(login_url, user, password)
+        periods_urls = get_months_urls(s, data_url)
 
-        pdfs = {}
         for year, months in periods_urls.items():
-            pdfs[year] = {}
             for month, month_url in months.items():
                 month_pdfs = get_pdfs_urls(
                     s,
-                    '{}/mod/book/{}'.format(DOMAIN, month_url)
+                    '{}/mod/book/{}'.format(whippet_url, month_url)
                 )
                 for pdf, pdf_url in month_pdfs.items():
                     if 'brokenfile' not in pdf_url:
@@ -84,8 +83,6 @@ class Command(BaseCommand):
                         pdf_date = pdf_name_to_date(pdf)
                         self.download_review(
                             s, pdf, pdf_url, pdf_date, yes=yes)
-
-                pdfs[year][month] = month_pdfs
 
     def download_review(self, s, pdf, pdf_url, date, yes=False):
         review = PressReview.objects.filter(date=date)
