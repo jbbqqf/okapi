@@ -35,6 +35,13 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """
+        With the help of some HTMLParsers, get a list of all press review pdfs
+        classed by date. For each one of them, propose to download it and
+        create related PressReview object if it does not exist.
+        """
+
+        # Handle options parameters
         if options['today']:
             self.stdout.write('Fetching today...')
 
@@ -46,11 +53,6 @@ class Command(BaseCommand):
 
         else:
             yes = False
-
-        whippet_url = settings.WHIPPET['url']
-        login_url = '{}{}'.format(whippet_url, settings.WHIPPET['login'])
-        data_url = '{}{}'.format(
-            whippet_url, settings.WHIPPET['press_review_home'])
 
         if options['user']:
             user = options['user']
@@ -64,6 +66,13 @@ class Command(BaseCommand):
         else:
             password = getpass('pass: ')
 
+        # Set some constants
+        whippet_url = settings.WHIPPET['url']
+        login_url = '{}{}'.format(whippet_url, settings.WHIPPET['login'])
+        data_url = '{}{}'.format(
+            whippet_url, settings.WHIPPET['press_review_home'])
+
+        # Make sure local media directory exists
         pressreviews_dir = join(settings.MEDIA_ROOT, 'pressreviews')
         if isdir(pressreviews_dir) is False:
             makedirs(pressreviews_dir)
@@ -85,6 +94,16 @@ class Command(BaseCommand):
                             s, pdf, pdf_url, pdf_date, yes=yes)
 
     def download_review(self, s, pdf, pdf_url, date, yes=False):
+        """
+        Check if press review pdf already exist in base. If not, propose to
+        download it and add its PressReview entry in base.
+
+        This method is based on the date that can be read on the pdf name,
+        because the way Alexia Simon names her press reviews allows this.
+        However this is precarious and should be watched closely (this is the
+        main reason why the admin is asked to confirm any download).
+        """
+
         review = PressReview.objects.filter(date=date)
         if not review.exists():
             if yes is False:
