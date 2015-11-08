@@ -347,19 +347,29 @@ class SchoolJuriesParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
 
+        # structure storing recorded juries
         self.juries = []
+        # append this dictionnary to juries after each jury's end
         self.current_jury = {}
 
+        # handle_data is triggered even outside of tags. current_tag records
+        # the most recent opened tags, and is set to None when a tag is closed.
         self.current_tag = None
 
+        # Those categories will be the keys of the final structure self.juries
         self.categories = [
             'date',
             'decision',
             'comment',
         ]
+        # Keep track which category is the next one :
+        # += 1 after a td
+        # = -1 after a tr
         self.current_category = -1
-        self.waiting_category_data = False
 
+        # There is only one section that is interesting : the third table,
+        # after the first tr. In this section, self.parsing_juries is set to
+        # True and is False the rest of the time.
         self.parsing_juries = False
         self.table_counter = 0
         self.in_juries_table = False
@@ -373,6 +383,7 @@ class SchoolJuriesParser(HTMLParser):
 
                 return
 
+            # Make sure the first tr used to display titles is not parsed
             if self.in_juries_table is True:
                 if tag == 'tr':
                     self.parsing_juries = True
@@ -404,14 +415,13 @@ class SchoolJuriesParser(HTMLParser):
 
     def handle_data(self, data):
         if self.parsing_juries is True:
-            if self.current_tag is not None:
-                if self.waiting_category_data is True:
-                    data = unicode(data, 'utf-8')
-                    data = data.strip()
+            if self.current_tag == 'td':
+                data = unicode(data, 'utf-8')
+                data = data.strip()
 
-                    if data != '':
-                        category = self.categories[self.current_category]
-                        self.current_jury[category] = data
+                if data != '':
+                    category = self.categories[self.current_category]
+                    self.current_jury[category] = data
 
 
 class SchoolYearsParser(HTMLParser):
