@@ -25,6 +25,17 @@ def install_wapiti_opener(domain, user, passwd):
 
 
 def init_whippet_session(login_url, user, password):
+    """
+    Wapiti and whippet do not use the same authent routine. Whippet pages are
+    not protected with some kind of htaccess : you need to authenticate on the
+    login page by giving your credentials in formdata.
+
+    The returned session will then carry your authent token transmitted via
+    http headers (well, I'm not sure about that...). The only thing you need
+    to do to access any whippet page is to use this session object and call
+    get or post methods (http GET and POST methods).
+    """
+
     s = session()
 
     authent_formdata = {
