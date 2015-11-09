@@ -394,7 +394,6 @@ class SchoolJuriesParser(HTMLParser):
 
         if tag == 'td':
             self.current_category += 1
-            self.waiting_category_data = True
 
     def handle_endtag(self, tag):
         if self.parsing_juries is True:
@@ -409,9 +408,6 @@ class SchoolJuriesParser(HTMLParser):
                     self.juries.append(self.current_jury)
                     self.current_jury = {}
                     self.current_category = -1
-
-            elif tag == 'td':
-                self.waiting_category_data = False
 
     def handle_data(self, data):
         if self.parsing_juries is True:
