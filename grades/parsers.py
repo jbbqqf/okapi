@@ -424,6 +424,94 @@ class SchoolJuriesParser(HTMLParser):
                     self.current_jury[category] = data
 
 
+class SchoolCertificationsParser(HTMLParser):
+    """
+    HTMLParser implementation to extract wapiti published informations about
+    your english, german and spanish (and whatsoever) which can be found at an
+    url like `https://wapiti.telecom-lille.fr/Commun/ens/adm/pf/pgs/etudiant/-
+    consulterExamen.aspx?anSco=22`.
+
+    For a given student, you can query different pages (one for each anSco).
+    However, you should always find the same informations on each of those
+    pages regarding certifications.
+    """
+
+    def __init__(self):
+        HTMLParser.__init__(self)
+
+        # structure storing recorded certifications
+        self.certifications = []
+        # append this dictionnary to certifications after each certif's end
+        self.current_certification = {}
+
+        # handle_data is triggered even outside of tags. current_tag records
+        # the most recent opened tags, and is set to None when a tag is closed.
+        self.current_tag = None
+
+        # Keys of the final structure self.certifications
+        self.categories = [
+            'date',
+            'exam',
+            'grade',
+        ]
+        # Keep track which category is the next one :
+        # += 1 after a td
+        # = -1 after a tr
+        self.current_category = -1
+
+        # There is only one section that is interesting : the third table,
+        # after the first tr. In this section, self.parsing_certifications is
+        # set to True and is False the rest of the time.
+        self.parsing_certifications = False
+        self.table_counter = 0
+        self.in_certifications_table = False
+
+    def handle_starttag(self, tag, attrs):
+        if self.parsing_certifications is False:
+            if tag == 'table':
+                self.table_counter += 1
+                if self.table_counter == 3:
+                    self.in_certifications_table = True
+
+                return
+
+            # Make sure the first tr used to display titles is not parsed
+            if self.in_certifications_table is True:
+                if tag == 'tr':
+                    self.parsing_certifications = True
+
+            return
+
+        self.current_tag = tag
+
+        if tag == 'td':
+            self.current_category += 1
+
+    def handle_endtag(self, tag):
+        if self.parsing_certifications is True:
+            self.current_tag = None
+
+            if tag == 'table':
+                if self.table_counter == 3:
+                    self.parsing_certifications = False
+
+            elif tag == 'tr':
+                if self.current_certification:  # True if not empty
+                    self.certifications.append(self.current_certification)
+                    self.current_certification = {}
+                    self.current_category = -1
+
+    def handle_data(self, data):
+        if self.parsing_certifications is True:
+            if self.current_tag == 'td':
+                data = unicode(data, 'utf-8')
+                data = data.strip()
+
+                if data != '':
+                    category = self.categories[self.current_category]
+                    self.current_certification[category] = data
+
+
 class SchoolYearsParser(HTMLParser):
     """
     This parser has been implemented to extract school years URL links listed
