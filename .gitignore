@@ -1,3 +1,4 @@
 *.pyc
 okapi/settings.py
+okapi/wsgi.py
 */migrations/*
