@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.models import User
-from rest_framework.serializers import ModelSerializer, StringRelatedField
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.serializers import (
+    ModelSerializer, HyperlinkedModelSerializer, StringRelatedField,
+    SerializerMethodField)
 from profiles.models import Profile, PhoneNumber, Email, SocialNetwork
 
 
@@ -35,8 +38,17 @@ class ProfileSerializer(ModelSerializer):
                   'social_networks', ]
 
 
-class UserSerializer(ModelSerializer):
+class UserSerializer(HyperlinkedModelSerializer):
+    profile = SerializerMethodField()
+
+    def get_profile(self, user):
+        try:
+            return user.profile.id
+
+        except ObjectDoesNotExist:
+            return None
+
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'email',
-                  'date_joined', ]
+                  'profile', 'date_joined', ]
