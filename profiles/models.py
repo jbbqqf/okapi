@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from django.db.models import (Model, DateField, TextField, CharField,
-                              ForeignKey, ManyToManyField, EmailField)
+from django.db.models import (
+    Model, DateField, TextField, CharField, EmailField, ManyToManyField,
+    OneToOneField)
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 
@@ -95,7 +96,7 @@ class Profile(Model):
     tels = ManyToManyField(PhoneNumber, blank=True)
     mails = ManyToManyField(Email, blank=True)
     social_networks = ManyToManyField(SocialNetwork, blank=True)
-    user = ForeignKey(User)
+    user = OneToOneField(User)
 
     def __unicode__(self):
         return u'{}\'s profile'.format(self.user.username)
