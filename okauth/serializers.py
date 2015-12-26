@@ -42,4 +42,4 @@ class TokenSerializer(ModelSerializer):
 
     class Meta:
         model = Token
-        fields = ['key', ]
+        fields = ('key',)

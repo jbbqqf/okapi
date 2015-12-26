@@ -48,5 +48,5 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter,)
-    search_fields = ['name', 'url', 'mailing', 'description', ]
+    search_fields = ('name', 'url', 'mailing', 'description',)
     filter_class = GroupFilter

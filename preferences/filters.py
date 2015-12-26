@@ -12,7 +12,7 @@ class UserInterfaceFilter(FilterSet):
 
     class Meta:
         model = UserInterface
-        fields = ['name', 'comment', ]
+        fields = ('name', 'comment',)
 
 
 class UserPrefFilter(FilterSet):
@@ -28,4 +28,4 @@ class UserPrefFilter(FilterSet):
 
     class Meta:
         model = UserPref
-        fields = ['ui_id', 'ui', 'conf', ]
+        fields = ('ui_id', 'ui', 'conf',)

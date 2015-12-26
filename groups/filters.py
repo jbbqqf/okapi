@@ -18,4 +18,4 @@ class GroupFilter(FilterSet):
 
     class Meta:
         model = Group
-        fields = ['name', 'url', 'mailing', 'description', 'parent', ]
+        fields = ('name', 'url', 'mailing', 'description', 'parent',)

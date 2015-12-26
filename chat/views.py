@@ -28,8 +28,8 @@ from profiles.models import User
 from groups.models import Group
 
 
-@authentication_classes((TokenAuthentication, SessionAuthentication, ))
-@permission_classes((IsAuthenticated, IsChannelAdminOrReadOnly, ))
+@authentication_classes((TokenAuthentication, SessionAuthentication,))
+@permission_classes((IsAuthenticated, IsChannelAdminOrReadOnly,))
 class ChannelView(ListModelMixin,
                   RetrieveModelMixin,
                   GenericViewSet):
@@ -334,8 +334,8 @@ class ChannelView(ListModelMixin,
         return Response(message)
 
 
-@authentication_classes((TokenAuthentication, SessionAuthentication, ))
-@permission_classes((IsAuthenticated, IsChannelWriterOrReadOnly, ))
+@authentication_classes((TokenAuthentication, SessionAuthentication,))
+@permission_classes((IsAuthenticated, IsChannelWriterOrReadOnly,))
 class PostViewSet(ListModelMixin,
                   RetrieveModelMixin,
                   GenericViewSet):

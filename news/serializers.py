@@ -7,6 +7,13 @@ from news.models import Event
 class EventSerializer(ModelSerializer):
     class Meta:
         model = Event
-        read_only_fields = ['author', 'created', ]
-        fields = ['id', 'author', 'title', 'description', 'link',
-                  'created', 'dday', ]
+        read_only_fields = ('author', 'created',)
+        fields = (
+            'id',
+            'author',
+            'title',
+            'description',
+            'link',
+            'created',
+            'dday',
+        )

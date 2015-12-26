@@ -16,4 +16,4 @@ class PressReviewFilter(FilterSet):
 
     class Meta:
         model = PressReview
-        fields = ['published_on', 'published_after', 'published_before', ]
+        fields = ('published_on', 'published_after', 'published_before',)

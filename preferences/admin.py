@@ -7,14 +7,14 @@ from preferences.models import (
 
 class UserInterfaceAdmin(admin.ModelAdmin):
     form = UserInterfaceForm
-    list_display = ['name', 'comment', ]
-    search_fields = ['name', 'comment', ]
+    list_display = ('name', 'comment',)
+    search_fields = ('name', 'comment',)
 
 
 class UserPrefAdmin(admin.ModelAdmin):
     form = UserPrefForm
-    list_display = ['user', 'ui', 'conf', ]
-    search_fields = ['user', 'ui', 'conf', ]
+    list_display = ('user', 'ui', 'conf',)
+    search_fields = ('user', 'ui', 'conf',)
 
 admin.site.register(UserInterface, UserInterfaceAdmin)
 admin.site.register(UserPref, UserPrefAdmin)

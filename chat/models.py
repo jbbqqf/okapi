@@ -44,7 +44,7 @@ class Channel(Model):
 class ChannelForm(ModelForm):
     class Meta:
         model = Channel
-        fields = ['name', 'public', ]
+        fields = ('name', 'public',)
 
 
 class Post(Model):
@@ -56,10 +56,10 @@ class Post(Model):
     only backend through application requests should be allowed create those.
     """
 
-    TYPE = [
+    TYPE = (
         ('m', 'message'),
         ('s', 'score'),
-    ]
+    )
 
     date = DateTimeField(auto_now_add=True)
     author = ForeignKey(User)
@@ -74,4 +74,4 @@ class Post(Model):
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ['author', 'type', 'content', 'channel', ]
+        fields = ('author', 'type', 'content', 'channel',)

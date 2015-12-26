@@ -12,15 +12,15 @@ from groups.models import Group
 class ChannelSerializer(ModelSerializer):
     class Meta:
         model = Channel
-        fields = ['id', 'name', 'public', 'active', 'created', ]
+        fields = ('id', 'name', 'public', 'active', 'created',)
 
 
 class ChannelMemberSerializer(Serializer):
-    PERMISSIONS = [
+    PERMISSIONS = (
         ('read_channel', 'Read Channel'),
         ('write_channel', 'Write Channel'),
         ('admin_channel', 'Admin Channel'),
-    ]
+    )
     user = IntegerField()
     permissions = ChoiceField(PERMISSIONS)
 
@@ -35,11 +35,11 @@ class ChannelMemberSerializer(Serializer):
 
 
 class ChannelGroupSerializer(Serializer):
-    PERMISSIONS = [
+    PERMISSIONS = (
         ('read_channel', 'Read Channel'),
         ('write_channel', 'Write Channel'),
         ('admin_channel', 'Admin Channel'),
-    ]
+    )
     group = IntegerField()
     permissions = ChoiceField(PERMISSIONS)
 
@@ -56,4 +56,4 @@ class ChannelGroupSerializer(Serializer):
 class PostSerializer(ModelSerializer):
     class Meta:
         model = Post
-        read_only_fields = ['author', 'type', ]
+        read_only_fields = ('author', 'type',)

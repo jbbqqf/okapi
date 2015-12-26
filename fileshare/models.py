@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.db import models
 from django.core.validators import RegexValidator
 from django.forms import ModelForm
@@ -5,6 +7,7 @@ from django.contrib.auth.models import User
 
 ALPHANUMERIC = RegexValidator(r'^[0-9a-zA-Z. _-]*$',
                               'Use only alphanumeric characters or `. _-`.')
+
 
 class Directory(models.Model):
     """
@@ -62,8 +65,8 @@ class Directory(models.Model):
 
     def is_parent(self, dir):
         """
-        Check (recursively) if self is parent of supplied `dir` (supply a simple
-        name). Return True or False.
+        Check (recursively) if self is parent of supplied `dir` (supply a
+        simple name). Return True or False.
         This method should be used before making operations on a directory such
         as changing its location (ie. if a user requests to move a parent in
         one of its child dir).
@@ -82,10 +85,12 @@ class Directory(models.Model):
         else:
             return False
 
+
 class DirectoryForm(ModelForm):
     class Meta:
         model = Directory
-        fields = ['name', 'parent', 'deleted',]
+        fields = ('name', 'parent', 'deleted',)
+
 
 class File(models.Model):
     """
@@ -93,8 +98,8 @@ class File(models.Model):
 
     File names support only alphanumeric characters and `.`, ` `, `_` and `-`
     (even if posix norm allows some special characters). This File model does
-    record the creator of a directory, which also becomes its owner. Only owners
-    and admins are able to PUT or DELETE a File.
+    record the creator of a directory, which also becomes its owner. Only
+    owners and admins are able to PUT or DELETE a File.
     """
 
     # use null only if your file if stored in the root directoy
@@ -111,7 +116,8 @@ class File(models.Model):
     def __unicode__(self):
         return '{}{}'.format(self.parent, self.name)
 
+
 class FileForm(ModelForm):
     class Meta:
         model = File
-        fields = ['name', 'parent', 'file', 'creator', 'deleted',]
+        fields = ('name', 'parent', 'file', 'creator', 'deleted',)

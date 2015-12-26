@@ -11,19 +11,19 @@ from profiles.models import Profile, PhoneNumber, Email, SocialNetwork
 class PhoneNumberSerializer(ModelSerializer):
     class Meta:
         model = PhoneNumber
-        fields = ['number', ]
+        fields = ('number',)
 
 
 class EmailSerializer(ModelSerializer):
     class Meta:
         model = Email
-        fields = ['email', ]
+        fields = ('email',)
 
 
 class SocialNetworkSerializer(ModelSerializer):
     class Meta:
         model = SocialNetwork
-        fields = ['network', 'link', ]
+        fields = ('network', 'link',)
 
 
 class ProfileSerializer(ModelSerializer):
@@ -33,9 +33,17 @@ class ProfileSerializer(ModelSerializer):
 
     class Meta:
         model = Profile
-        read_only_fields = ['user', ]
-        fields = ['id', 'user', 'birthday', 'note', 'gender', 'tels', 'mails',
-                  'social_networks', ]
+        read_only_fields = ('user',)
+        fields = (
+            'id',
+            'user',
+            'birthday',
+            'note',
+            'gender',
+            'tels',
+            'mails',
+            'social_networks',
+        )
 
 
 class UserSerializer(HyperlinkedModelSerializer):
@@ -50,5 +58,12 @@ class UserSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email',
-                  'profile', 'date_joined', ]
+        fields = (
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'profile',
+            'date_joined',
+        )

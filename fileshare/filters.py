@@ -26,8 +26,15 @@ class FileFilter(FilterSet):
 
     class Meta:
         model = File
-        fields = ['name', 'parent', 'creator', 'created_after',
-                  'created_before', 'modified_after', 'modified_before', ]
+        fields = (
+            'name',
+            'parent',
+            'creator',
+            'created_after',
+            'created_before',
+            'modified_after',
+            'modified_before',
+        )
 
 
 class DirectoryFilter(FilterSet):
@@ -51,5 +58,11 @@ class DirectoryFilter(FilterSet):
 
     class Meta:
         model = Directory
-        fields = ['name', 'parent', 'created_after', 'created_before',
-                  'modified_after', 'modified_before', ]
+        fields = (
+            'name',
+            'parent',
+            'created_after',
+            'created_before',
+            'modified_after',
+            'modified_before',
+        )

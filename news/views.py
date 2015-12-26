@@ -55,7 +55,7 @@ class EventView(ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter,)
-    search_fields = ['author__username', 'title', 'description', 'link', ]
+    search_fields = ('author__username', 'title', 'description', 'link',)
     filter_class = EventFilter
 
     def perform_create(self, serializer):

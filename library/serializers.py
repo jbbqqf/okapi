@@ -7,4 +7,4 @@ from library.models import PressReview
 class PressReviewSerializer(ModelSerializer):
     class Meta:
         model = PressReview
-        fields = ['id', 'date', 'link', ]
+        fields = ('id', 'date', 'link',)

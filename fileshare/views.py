@@ -1,25 +1,23 @@
-from os.path import join, isdir
-from os import makedirs, rmdir
+# -*- coding: utf-8 -*-
 
-from django.db import transaction
-from django.shortcuts import render
-from django.conf import settings
-
-from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend, SearchFilter
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin
-from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
+from rest_framework.mixins import (
+    ListModelMixin, RetrieveModelMixin, CreateModelMixin,
+    UpdateModelMixin, DestroyModelMixin)
+from rest_framework.decorators import (
+    authentication_classes, permission_classes)
+from rest_framework.authentication import (
+    TokenAuthentication, SessionAuthentication)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.parsers import FormParser, MultiPartParser
 
 from fileshare.models import File, Directory
 from fileshare.serializers import FileSerializer, DirectorySerializer
-from fileshare.permissions import IsFileOwnerOrAdminOrReadOnly, CanEditDirectory
+from fileshare.permissions import (
+    IsFileOwnerOrAdminOrReadOnly, CanEditDirectory)
 from fileshare.filters import FileFilter, DirectoryFilter
-from common.common import cmd
+
 
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
 @permission_classes((IsAuthenticatedOrReadOnly,))
@@ -34,7 +32,8 @@ class FileViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
-@authentication_classes((TokenAuthentication, SessionAuthentication, BasicAuthentication,))
+
+@authentication_classes((TokenAuthentication, SessionAuthentication,))
 @permission_classes((IsAuthenticatedOrReadOnly, CanEditDirectory,))
 class DirectoryViewSet(viewsets.GenericViewSet,
                        ListModelMixin,

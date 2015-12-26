@@ -31,6 +31,14 @@ class EventFilter(FilterSet):
 
     class Meta:
         model = Event
-        fields = ['author', 'title', 'description', 'link', 'dday_on',
-                  'dday_on', 'dday_before', 'created_after',
-                  'created_before', ]
+        fields = (
+            'author',
+            'title',
+            'description',
+            'link',
+            'dday_on',
+            'dday_on',
+            'dday_before',
+            'created_after',
+            'created_before',
+        )

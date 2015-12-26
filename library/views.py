@@ -35,7 +35,7 @@ class PressReviewView(ReadOnlyModelViewSet):
     queryset = PressReview.objects.all()
     serializer_class = PressReviewSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter,)
-    search_fields = ['date', ]
+    search_fields = ('date',)
     filter_class = PressReviewFilter
     pagination_class = PressReviewPagination
 

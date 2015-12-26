@@ -6,7 +6,7 @@ from fileshare.models import File, FileForm, Directory, DirectoryForm
 
 class DirectoryAdmin(admin.ModelAdmin):
     form = DirectoryForm
-    list_display = ['name', 'parent', 'deleted', 'created', 'modified', ]
+    list_display = ('name', 'parent', 'deleted', 'created', 'modified',)
 
 
 class FileAdmin(admin.ModelAdmin):

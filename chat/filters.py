@@ -55,7 +55,7 @@ class ChannelFilter(FilterSet):
 
     class Meta:
         model = Channel
-        fields = ['name', 'public', 'created_after', 'created_before', ]
+        fields = ('name', 'public', 'created_after', 'created_before',)
 
 
 class ReadablePostFilter(filters.BaseFilterBackend):
@@ -90,4 +90,4 @@ class PostFilter(FilterSet):
 
     class Meta:
         model = Post
-        fields = ['author', 'type', 'content', 'datefrom', 'dateto', ]
+        fields = ('author', 'type', 'content', 'datefrom', 'dateto',)

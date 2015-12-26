@@ -8,26 +8,26 @@ from profiles.models import (
 
 class PhoneNumberAdmin(admin.ModelAdmin):
     form = PhoneNumberForm
-    list_display = ['number', ]
-    search_fields = ['number', ]
+    list_display = ('number',)
+    search_fields = ('number',)
 
 
 class EmailAdmin(admin.ModelAdmin):
     form = EmailForm
-    list_display = ['email', ]
-    search_fields = ['email', ]
+    list_display = ('email',)
+    search_fields = ('email',)
 
 
 class SocialNetworkAdmin(admin.ModelAdmin):
     form = SocialNetworkForm
-    list_display = ['network', 'link', ]
-    search_fields = ['network', 'link', ]
+    list_display = ('network', 'link',)
+    search_fields = ('network', 'link',)
 
 
 class ProfileAdmin(admin.ModelAdmin):
     form = ProfileForm
-    list_display = ['user', 'nick', 'birthday', 'note', 'gender', ]
-    search_fields = ['nick', 'birthday', 'note', ]
+    list_display = ('user', 'nick', 'birthday', 'note', 'gender',)
+    search_fields = ('nick', 'birthday', 'note',)
 
 admin.site.register(PhoneNumber, PhoneNumberAdmin)
 admin.site.register(Email, EmailAdmin)

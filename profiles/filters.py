@@ -17,7 +17,7 @@ class UserFilter(FilterSet):
 
     class Meta:
         model = User
-        fields = ['firstname', 'lastname', 'is_staff', ]  # 'group',]
+        fields = ('firstname', 'lastname', 'is_staff',)  # 'group',]
 
     # def group_filter(self, queryset, value):
     #     """
@@ -78,5 +78,16 @@ class ProfileFilter(FilterSet):
 
     class Meta:
         model = Profile
-        fields = ['nick', 'born_after', 'born_before', 'born_on', 'note',
-                  'gender', 'user', 'tel', 'email', 'network', 'link', ]
+        fields = (
+            'nick',
+            'born_after',
+            'born_before',
+            'born_on',
+            'note',
+            'gender',
+            'user',
+            'tel',
+            'email',
+            'network',
+            'link',
+        )
