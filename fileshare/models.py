@@ -8,9 +8,8 @@ ALPHANUMERIC = RegexValidator(r'^[0-9a-zA-Z. _-]*$',
 
 class Directory(models.Model):
     """
-    Directories in fileshare application aim to map system directories from
-    a media root directory (~okapi/www/media/fileshare) where users can drop
-    files and share it.
+    Directories in fileshare application aim to map system directories in base
+    to be able to reference files and subdirectories as their parent.
 
     Directories support only alphanumeric characters and `.`, ` `, `_` and `-`
     (even if posix norm allows some special characters). This directory model
