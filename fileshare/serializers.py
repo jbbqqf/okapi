@@ -6,7 +6,14 @@ from fileshare.models import File, Directory
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
-        fields = ['id', 'created', 'modified', 'name', 'parent', 'creator',]
+        fields = [
+            'id',
+            'created',
+            'modified',
+            'name',
+            'file',
+            'parent',
+        ]
 
 class DirectorySerializer(serializers.ModelSerializer):
     class Meta:

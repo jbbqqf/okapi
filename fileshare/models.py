@@ -90,8 +90,7 @@ class DirectoryForm(ModelForm):
 
 class File(models.Model):
     """
-    Files in fileshare application map system stored files in the virtual
-    filesystem provided by Directory models.
+    Files in fileshare application map system stored files in media/files
 
     File names support only alphanumeric characters and `.`, ` `, `_` and `-`
     (even if posix norm allows some special characters). This File model does
@@ -102,6 +101,7 @@ class File(models.Model):
     # use null only if your file if stored in the root directoy
     parent = models.ForeignKey(Directory, null=True)
     name = models.CharField(max_length=32, validators=[ALPHANUMERIC])
+    file = models.FileField(upload_to='files')
     creator = models.ForeignKey(User)
     # deleted is not yet implemented but it should allow users to remove a
     # ressource without being destroyed on server (trashbin functionnality ?)
@@ -115,4 +115,4 @@ class File(models.Model):
 class FileForm(ModelForm):
     class Meta:
         model = File
-        fields = ['name', 'parent', 'creator', 'deleted',]
+        fields = ['name', 'parent', 'file', 'creator', 'deleted',]

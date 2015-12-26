@@ -13,6 +13,7 @@ from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.parsers import FormParser, MultiPartParser
 
 from fileshare.models import File, Directory
 from fileshare.serializers import FileSerializer, DirectorySerializer
@@ -20,9 +21,12 @@ from fileshare.permissions import IsFileOwnerOrAdminOrReadOnly, CanEditDirectory
 from fileshare.filters import FileFilter, DirectoryFilter
 from common.common import cmd
 
+@authentication_classes((TokenAuthentication, SessionAuthentication,))
+@permission_classes((IsAuthenticatedOrReadOnly,))
 class FileViewSet(viewsets.ModelViewSet):
     queryset = File.objects.filter(deleted=False)
     serializer_class = FileSerializer
+    parser_classes = (FormParser, MultiPartParser,)
     filter_backends = (DjangoFilterBackend, SearchFilter,)
     search_fields = ('name',)
     filter_class = FileFilter

@@ -11,8 +11,15 @@ class DirectoryAdmin(admin.ModelAdmin):
 
 class FileAdmin(admin.ModelAdmin):
     form = FileForm
-    list_display = [
-        'name', 'parent', 'creator', 'deleted', 'created', 'modified', ]
+    list_display = (
+        'name',
+        'parent',
+        'file',
+        'creator',
+        'deleted',
+        'created',
+        'modified',
+    )
 
 admin.site.register(Directory, DirectoryAdmin)
 admin.site.register(File, FileAdmin)
