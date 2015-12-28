@@ -7,10 +7,12 @@ from fileshare.models import File, Directory
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
+        read_only_fields = ('creator',)
         fields = (
             'id',
             'created',
             'modified',
+            'creator',
             'name',
             'file',
             'parent',
