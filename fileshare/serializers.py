@@ -6,13 +6,17 @@ from fileshare.models import File, Directory
 
 class FileSerializer(serializers.ModelSerializer):
     path_ids = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
 
-    def get_path_ids(self, file):
-        return file.get_path_ids()
+    def get_path_ids(self, f):
+        return f.get_path_ids()
+
+    def get_size(self, f):
+        return f.file.size
 
     class Meta:
         model = File
-        read_only_fields = ('creator', 'path_ids',)
+        read_only_fields = ('creator', 'path_ids', 'size',)
         fields = (
             'id',
             'created',
@@ -22,6 +26,7 @@ class FileSerializer(serializers.ModelSerializer):
             'file',
             'parent',
             'path_ids',
+            'size',
         )
 
 
