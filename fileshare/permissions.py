@@ -5,16 +5,18 @@ from fileshare.models import File, Directory
 
 
 class IsFileOwnerOrAdminOrReadOnly(BasePermission):
+    """
+    Everyone can read files but only staff or owners can edit / delete it.
+    """
 
     def has_object_permission(self, request, view, file):
         if request.method in SAFE_METHODS:
             return True
 
-        if request.user.is_staff is True or request.user == file.owner:
+        if request.user.is_staff is True or request.user == file.creator:
             return True
 
-        else:
-            return False
+        return False
 
 
 class CanEditDirectory(BasePermission):

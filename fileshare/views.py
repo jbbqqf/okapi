@@ -20,7 +20,7 @@ from fileshare.filters import FileFilter, DirectoryFilter
 
 
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
-@permission_classes((IsAuthenticatedOrReadOnly,))
+@permission_classes((IsAuthenticatedOrReadOnly, IsFileOwnerOrAdminOrReadOnly,))
 class FileViewSet(viewsets.ModelViewSet):
     queryset = File.objects.filter(deleted=False)
     serializer_class = FileSerializer
