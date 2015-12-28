@@ -33,6 +33,16 @@ class FileViewSet(viewsets.ModelViewSet):
         serializer.save(creator=self.request.user)
 
 
+def serve_private_file(request, path):
+    import os
+    from django.http.response import HttpResponse
+    PRIVATE_MEDIA_ROOT = '/home/jbb/projects/okapi/www/private_media/'
+    fullpath = os.path.join(PRIVATE_MEDIA_ROOT, path)
+    response = HttpResponse()
+    response['X-Sendfile'] = fullpath
+    return response
+
+
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
 @permission_classes((IsAuthenticatedOrReadOnly, CanEditDirectory,))
 class DirectoryViewSet(viewsets.GenericViewSet,

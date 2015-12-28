@@ -5,9 +5,14 @@ from fileshare.models import File, Directory
 
 
 class FileSerializer(serializers.ModelSerializer):
+    path_ids = serializers.SerializerMethodField()
+
+    def get_path_ids(self, file):
+        return file.get_path_ids()
+
     class Meta:
         model = File
-        read_only_fields = ('creator',)
+        read_only_fields = ('creator', 'path_ids',)
         fields = (
             'id',
             'created',
@@ -16,13 +21,20 @@ class FileSerializer(serializers.ModelSerializer):
             'name',
             'file',
             'parent',
+            'path_ids',
         )
 
 
 class DirectorySerializer(serializers.ModelSerializer):
+    path_ids = serializers.SerializerMethodField()
+
+    def get_path_ids(self, directory):
+        return directory.get_path_ids()
+
     class Meta:
         model = Directory
-        fields = ('id', 'created', 'modified', 'name', 'parent',)
+        read_only_fields = ('path_ids',)
+        fields = ('id', 'created', 'modified', 'name', 'parent', 'path_ids',)
 
     def validate(self, data):
         try:

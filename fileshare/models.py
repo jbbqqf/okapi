@@ -37,6 +37,20 @@ class Directory(models.Model):
     def __unicode__(self):
         return self.to_absolute()
 
+    def get_path_ids(self):
+        """
+        Return directory path as a list of parent ids. Root directory is
+        always considered to have an id equal to 1. The first directory to
+        call this method IS part of the list.
+        """
+
+        if self.parent is None:
+            return [1]
+
+        else:
+            path = [self.id]
+            return self.parent.get_path_ids() + path
+
     def to_absolute(self):
         """
         Return directory path from `~okapi/www/media/fileshare` with a trailing
@@ -112,6 +126,15 @@ class File(models.Model):
     deleted = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+
+    def get_path_ids(self):
+        """
+        Return file path as a list of parent ids. Root directory is
+        always considered to have an id equal to 1. This File id is NOT part
+        of the list.
+        """
+
+        return self.parent.get_path_ids()
 
     def __unicode__(self):
         return '{}{}'.format(self.parent, self.name)
