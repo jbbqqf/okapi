@@ -37,8 +37,10 @@ urlpatterns = [
     url(r'^docs/', include('rest_framework_swagger.urls')),
 ]
 
-# admin webinterface
-urlpatterns += staticfiles_urlpatterns()
+if settings.DEBUG:
+    # admin webinterface
+    urlpatterns += staticfiles_urlpatterns()
 
-# serving media files
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # serving media files
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
