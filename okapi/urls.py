@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^okauth/', include('okauth.urls')),
     url(r'^users/', include('profiles.urls')),
     url(r'^users/', include('groups.urls')),
+    url(r'^users/', include('online.urls')),
     url(r'^chat/', include('chat.urls')),
     url(r'^share/', include('fileshare.urls')),
     url(r'^prefs/', include('preferences.urls')),
