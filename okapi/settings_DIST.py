@@ -109,7 +109,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Paris'
 
 USE_I18N = True
 
@@ -130,7 +130,7 @@ ANONYMOUS_USER_ID = -1
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = '/home/apps/okapi/www/media'
+MEDIA_ROOT = '/PATH/TO/okapi/www/media'
 
 MEDIA_URL = '/media/'
 
