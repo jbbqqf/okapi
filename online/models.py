@@ -8,12 +8,12 @@ from django.contrib.auth.models import User
 
 class Presence(Model):
     """
-    User interfaces decide when to push which information and whether they want
+    User interfaces decide when to push informations and whether they want
     to use stuff here. Since okapi is a stateless web service and can handle
-    multiple clients, there is no way to force users to show themselves.
+    multiple clients, there is no way to force users to show their presence.
 
-    However, if the implementation wants to offer this feature to make chat
-    discussions more convenient, Presence objects offer this possibility.
+    However, if the client implementation wants to offer this feature to make
+    chat discussions more convenient, Presence objects offer this possibility.
 
     The last_active field should be updated frequently to inform that
     connected user has used his mouse, clicked or triggered something on the
