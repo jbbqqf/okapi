@@ -13,20 +13,18 @@ import os
 import sys
 import site
 
-okapi_home = '~okapi/'
+# In each string describing a path, you should not use '~' character nor
+# os.path.join to transform '/PATH/TO/OKAPI_HOME/' a variable. It is
+# repetitive but it avoids bugs.
 
-site.addsitedir(os.path.join(
-    okapi_home,
-    'venv_okapi/local/lib/python2.7/site-packages'))
+site.addsitedir('/PATH/TO/OKAPI_HOME/venv_okapi/lib/python3.4/site-packages')
 
-sys.path.append(os.path.join(okapi_home, 'www'))
-sys.path.append(os.path.join(okapi_home, 'www/okapi'))
+sys.path.append('/PATH/TO/OKAPI_HOME/www')
+sys.path.append('/PATH/TO/OKAPI_HOME/www/okapi')
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "okapi.settings")
+os.environ["DJANGO_SETTINGS_MODULE"] = "okapi.settings"
 
-activate_env = os.path.expanduser(os.path.join(
-    okapi_home,
-    'venv_okapi/bin/activate_this.py'))
+activate_env = os.path.expanduser('/PATH/TO/OKAPI_VENV/bin/activate_this.py')
 execfile(activate_env, dict(__file__=activate_env))
 
 from django.core.wsgi import get_wsgi_application
