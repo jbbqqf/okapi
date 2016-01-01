@@ -131,7 +131,7 @@ class ChannelView(ListModelMixin,
 
         return Response(permissions)
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def adduser(self, request, pk=None):
         """
         === Add a user permission ===
@@ -178,7 +178,7 @@ class ChannelView(ListModelMixin,
         }
         return Response(message)
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def rmuser(self, request, pk=None):
         """
         === Remove a user permission ===
@@ -241,7 +241,7 @@ class ChannelView(ListModelMixin,
 
         return Response(serialized_perms)
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def addgroup(self, request, pk=None):
         """
         === Add a group permission ===
@@ -288,7 +288,7 @@ class ChannelView(ListModelMixin,
         }
         return Response(message)
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def rmgroup(self, request, pk=None):
         """
         === Remove a group permission ===

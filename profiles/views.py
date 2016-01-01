@@ -117,7 +117,7 @@ class ProfileViewSet(ListModelMixin,
     search_fields = ('nick', 'note',)
     filter_class = ProfileFilter
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def addnumber(self, request, pk=None, *args, **kwargs):
         """
         === Add a phone number to pk-profile ===
@@ -145,7 +145,7 @@ class ProfileViewSet(ListModelMixin,
                    'Profile {} has new number {}'.format(profile, number)}
         return Response(message)
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def rmnumber(self, request, pk=None, *args, **kwargs):
         """
         === Remove a phone number to pk-profile ===
@@ -175,7 +175,7 @@ class ProfileViewSet(ListModelMixin,
         }
         return Response(message)
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def addemail(self, request, pk=None, *args, **kwargs):
         """
         === Add an email to pk-profile ===
@@ -203,7 +203,7 @@ class ProfileViewSet(ListModelMixin,
                    'Profile {} has new email {}'.format(profile, email)}
         return Response(message)
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def rmemail(self, request, pk=None, *args, **kwargs):
         """
         === Remove an email to pk-profile ===
@@ -231,7 +231,7 @@ class ProfileViewSet(ListModelMixin,
                    'Profile {} no longer has {} email'.format(profile, email)}
         return Response(message)
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def addsocialnetwork(self, request, pk=None, *args, **kwargs):
         """
         === Add a social network to pk-profile ===
@@ -265,7 +265,7 @@ class ProfileViewSet(ListModelMixin,
         }
         return Response(message)
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['POST'])
     def rmsocialnetwork(self, request, pk=None, *args, **kwargs):
         """
         === Remove a social network to pk-profile ===
