@@ -55,6 +55,7 @@ INSTALLED_APPS = (
     'news',
     'grades',
     'library',
+    'score',
 )
 
 MIDDLEWARE_CLASSES = (
