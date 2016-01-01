@@ -10,11 +10,14 @@ from rest_framework.authentication import (
 from rest_framework.permissions import AllowAny
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.response import Response
-from rest_framework.status import HTTP_401_UNAUTHORIZED
+from rest_framework.status import (
+    HTTP_401_UNAUTHORIZED, HTTP_201_CREATED, HTTP_200_OK)
 
+from common.common import get_ip, get_first_proxy_ip
 from online.filters import PresenceFilter
 from online.models import Presence
-from online.serializers import PresenceSerializer
+from online.serializers import (
+    PresenceSerializer, IPPrivacySerializer, AwaySerializer)
 
 
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
@@ -42,29 +45,89 @@ class PresenceView(ReadOnlyModelViewSet):
 
     @list_route(methods=['POST'])
     def active(self, request, *args, **kwargs):
+        """
+        === Notify an active presence ===
+
+        FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT. REFER TO FOLLOWING
+        INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You can provide one, two or none of those fields in POST parameters :
+          * show_ip : true or false (default is true)
+          * show_proxy_ip : true or false (default is true)
+
+        Notifying an active presence will also update user's passive presence.
+        """
+
         if not request.user.is_authenticated():
             message = {
                 'message': 'You must authenticate to perform this action'}
             return Response(message, status=HTTP_401_UNAUTHORIZED)
 
+        ip_privacy_serializer = IPPrivacySerializer(data=request.data)
+        ip_privacy_serializer.is_valid(raise_exception=True)
+
         presence, created = Presence.objects.get_or_create(
             user=request.user)
 
         now = datetime.now()
+        # an active presence includes the fact that user is passively present
         presence.last_passive = now
         presence.last_active = now
 
+        if ip_privacy_serializer.data['show_ip'] is True:
+            # well, we try and if the output data of get_ip doesn't work we
+            # just make sure to ecrase previous value
+            try:
+                presence.ip = get_ip(request)
+            except:
+                presence.ip = None
+        else:
+            # this is important to set it to None to ecrase any previous
+            # potential value
+            presence.ip = None
+
+        if ip_privacy_serializer.data['show_proxy_ip'] is True:
+            # well, we try and if the output data of get_first_proxy_ip
+            # doesn't work we just make sure to ecrase previous value
+            try:
+                presence.proxy_ip = get_first_proxy_ip(request)
+            except:
+                presence.proxy_ip = None
+        else:
+            # this is important to set it to None to ecrase any previous
+            # potential value
+            presence.proxy_ip = None
+
         presence.save()
 
-        serializer = self.get_serializer(presence)
-        return Response(serializer.data)
+        response_serializer = self.get_serializer(presence)
+        if created:
+            status = HTTP_201_CREATED
+        else:
+            status = HTTP_200_OK
+
+        return Response(response_serializer.data, status=status)
 
     @list_route(methods=['POST'])
     def passive(self, request, *args, **kwargs):
+        """
+        === Notify a passive presence ===
+
+        FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT. REFER TO FOLLOWING
+        INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You can provide one, two or none of those fields in POST parameters :
+          * show_ip : true or false (default is true)
+          * show_proxy_ip : true or false (default is true)
+        """
+
         if not request.user.is_authenticated():
             message = {
                 'message': 'You must authenticate to perform this action'}
             return Response(message, status=HTTP_401_UNAUTHORIZED)
+
+        ip_privacy_serializer = IPPrivacySerializer(data=request.data)
+        ip_privacy_serializer.is_valid(raise_exception=True)
 
         presence, created = Presence.objects.get_or_create(
             user=request.user)
@@ -72,7 +135,95 @@ class PresenceView(ReadOnlyModelViewSet):
         now = datetime.now()
         presence.last_passive = now
 
+        if ip_privacy_serializer.data['show_ip'] is True:
+            # well, we try and if the output data of get_ip doesn't work we
+            # just make sure to ecrase previous value
+            try:
+                presence.ip = get_ip(request)
+            except:
+                presence.ip = None
+        else:
+            # this is important to set it to None to ecrase any previous
+            # potential value
+            presence.ip = None
+
+        if ip_privacy_serializer.data['show_proxy_ip'] is True:
+            # well, we try and if the output data of get_first_proxy_ip
+            # doesn't work we just make sure to ecrase previous value
+            try:
+                presence.proxy_ip = get_first_proxy_ip(request)
+            except:
+                presence.proxy_ip = None
+        else:
+            # this is important to set it to None to ecrase any previous
+            # potential value
+            presence.proxy_ip = None
+
         presence.save()
 
-        serializer = self.get_serializer(presence)
-        return Response(serializer.data)
+        response_serializer = self.get_serializer(presence)
+        if created:
+            status = HTTP_201_CREATED
+        else:
+            status = HTTP_200_OK
+
+        return Response(response_serializer.data, status=status)
+
+    @list_route(methods=['POST'])
+    def away(self, request, *args, **kwargs):
+        """
+        === Set user away status ===
+
+        FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT. REFER TO FOLLOWING
+        INSTRUCTIONS TO REQUEST ON THIS ROUTE :
+
+        You can provide this field in POST parameters or have a default value :
+          * status : true or false (default is true)
+        """
+
+        if not request.user.is_authenticated():
+            message = {
+                'message': 'You must authenticate to perform this action'}
+            return Response(message, status=HTTP_401_UNAUTHORIZED)
+
+        away_serializer = AwaySerializer(data=request.data)
+        away_serializer.is_valid(raise_exception=True)
+
+        presence, created = Presence.objects.get_or_create(
+            user=request.user)
+        presence.away = away_serializer.data['status']
+        presence.save()
+
+        response_serializer = self.get_serializer(presence)
+        if created:
+            status = HTTP_201_CREATED
+        else:
+            status = HTTP_200_OK
+
+        return Response(response_serializer.data, status=status)
+
+    @list_route(methods=['POST'])
+    def toggle_away(self, request, *args, **kwargs):
+        """
+        === Change an user away status ===
+
+        FORMS PROVIDED BY DOCUMENTATION ARE NOT CORRECT.
+        """
+
+        if not request.user.is_authenticated():
+            message = {
+                'message': 'You must authenticate to perform this action'}
+            return Response(message, status=HTTP_401_UNAUTHORIZED)
+
+        presence, created = Presence.objects.get_or_create(
+            user=request.user)
+        presence.away = not presence.away
+        presence.save()
+
+        response_serializer = self.get_serializer(presence)
+        if created:
+            status = HTTP_201_CREATED
+        else:
+            status = HTTP_200_OK
+
+        return Response(response_serializer.data, status=status)
