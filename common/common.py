@@ -31,3 +31,34 @@ def find_string_between(string, sub_first, sub_last):
 
     except ValueError:
         return ''
+
+
+def get_ip(request):
+    """
+    Returns the IP of the request, accounting for the possibility of being
+    behind a proxy, or None if not able to read it.
+
+    cf https://www.djangosnippets.org/snippets/2575/
+    """
+
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', None)
+    if ip:
+        # X_FORWARDED_FOR returns client1, proxy1, proxy2,...
+        ip = ip.split(', ')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR', None)
+    return ip
+
+
+def get_first_proxy_ip(request):
+    """
+    Returns the IP of the first proxy of the request or None.
+    """
+
+    proxies = request.META.get('HTTP_X_FORWARDED_FOR', None)
+    if proxies:
+        proxy_ips = proxies.split(', ')
+        if len(proxy_ips) >= 2:
+            return proxy_ips[1]
+
+    return None
