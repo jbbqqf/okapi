@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^news/', include('news.urls')),
     url(r'^grades/', include('grades.urls')),
     url(r'^library/', include('library.urls')),
+    url(r'^score/', include('score.urls')),
 
     url(r'^docs/', include('rest_framework_swagger.urls')),
 ]
