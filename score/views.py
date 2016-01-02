@@ -8,7 +8,7 @@ from rest_framework.authentication import (
     TokenAuthentication, SessionAuthentication)
 from rest_framework.filters import DjangoFilterBackend
 
-from score.pagination import ScoresPagination
+from common.pagination import GamePagination
 from score.filters import ScoreFilter, CurrentScoreFilter
 from score.models import Score, CurrentScore
 from score.serializers import ScoreSerializer, CurrentScoreSerializer
@@ -31,7 +31,7 @@ class ScoreView(ReadOnlyModelViewSet):
     serializer_class = ScoreSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = ScoreFilter
-    pagination_class = ScoresPagination
+    pagination_class = GamePagination
 
 
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
