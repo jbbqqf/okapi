@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'grades',
     'library',
     'score',
+    'button',
 )
 
 MIDDLEWARE_CLASSES = (
