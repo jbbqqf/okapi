@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from datetime import timedelta
+
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.decorators import (
     api_view, list_route, authentication_classes, permission_classes,
@@ -15,7 +17,8 @@ from rest_framework.throttling import UserRateThrottle
 from common.pagination import GamePagination
 from button.filters import ClearFilter
 from button.models import Clear
-from button.serializers import ClearSerializer
+from score.models import Score
+from button.serializers import ClearSerializer, MyStatsSerializer
 
 
 class OncePerHourUserThrottle(UserRateThrottle):
@@ -38,6 +41,33 @@ def clear(request):
 
     serializer = ClearSerializer(clear)
     return Response(serializer.data, status=HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication, SessionAuthentication,))
+@permission_classes((IsAuthenticated,))
+def mystats(request):
+    """
+    === Provide some personnal stats about your participation ===
+    """
+
+    my_button_scores = Score.objects.filter(user=request.user, game='b')
+
+    my_score = 0
+    for score in my_button_scores:
+        my_score += score.value
+
+    my_best_score = my_button_scores.order_by('value')[0]
+    my_best_conquest = timedelta(seconds=(my_best_score.value / 10))
+
+    my_clicks = my_button_scores.count()
+
+    serializer = MyStatsSerializer(data={'my_score': my_score,
+                                         'my_best_conquest': my_best_conquest,
+                                         'my_clicks': my_clicks,
+                                         })
+    serializer.is_valid(raise_exception=True)
+    return Response(serializer.data)
 
 
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
