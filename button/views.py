@@ -2,13 +2,15 @@
 
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.decorators import (
-    api_view, list_route, authentication_classes, permission_classes)
+    api_view, list_route, authentication_classes, permission_classes,
+    throttle_classes)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import (
     TokenAuthentication, SessionAuthentication)
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
+from rest_framework.throttling import UserRateThrottle
 
 from common.pagination import GamePagination
 from button.filters import ClearFilter
@@ -16,9 +18,14 @@ from button.models import Clear
 from button.serializers import ClearSerializer
 
 
+class OncePerHourUserThrottle(UserRateThrottle):
+    rate = '1/hour'
+
+
 @api_view(['POST'])
 @authentication_classes((TokenAuthentication, SessionAuthentication,))
 @permission_classes((IsAuthenticated,))
+@throttle_classes((OncePerHourUserThrottle,))
 def clear(request):
     """
     === Clear the button ! ===
