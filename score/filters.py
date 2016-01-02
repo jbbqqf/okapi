@@ -6,7 +6,7 @@ from score.models import Score, CurrentScore
 
 class ScoreFilter(FilterSet):
     user = NumberFilter(name='user',
-                        label='usre whose id is provided value')
+                        label='user whose id is provided value')
     game = CharFilter(name='game', label='scores whose game name is value')
     value = NumberFilter(name='value',
                          label='current scores being equal to value')
