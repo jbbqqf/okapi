@@ -30,7 +30,7 @@ def stats(request):
       * game : 'p', 'd', 't', 'b', etc. or '*' for all games (default is '*')
       * top : Integer for the maximum number of players you want to have
               informations about (response can contain less if there are not
-              enough users having Score entries). (default is 10)
+              enough users having Score entries). (default is 10, min is 1)
       * reverse : true or false (default is false). Instead of returning the
                   first <top> players, it returns the last <top>.
       * start : datetime setting a greater or equal boundary (default is null :

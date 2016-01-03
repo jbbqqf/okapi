@@ -20,8 +20,7 @@ class CurrentScoreSerializer(ModelSerializer):
 
 class StatsSerializer(Serializer):
     game = CharField(default='*')
-    # TODO: validate top is >= 0
-    top = IntegerField(default=10)
+    top = IntegerField(default=10, min_value=1)
     reverse = BooleanField(default=False)
     start = DateTimeField(default=None)
     end = DateTimeField(default=None)
