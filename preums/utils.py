@@ -27,7 +27,7 @@ def is_posted_today(string, date, channel=None, excluded_players=[]):
     for player in excluded_players:
         matching_posts_so_far = matching_posts_so_far.exclude(author=player)
 
-    if matching_posts_so_far.count() == 0:
+    if not matching_posts_so_far.exists():
         return None
 
     matching_posts_so_far.order_by('date')
