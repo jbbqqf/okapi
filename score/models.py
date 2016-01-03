@@ -5,6 +5,7 @@ from django.db.models import (Model, ForeignKey, CharField, IntegerField,
 from django.forms import ModelForm
 
 from django.contrib.auth.models import User
+from chat.models import Post, Channel
 
 
 class Score(Model):
@@ -38,6 +39,8 @@ class Score(Model):
         amount of score entries to retrieve the main score.
         """
 
+        game_channel = Channel.objects.get(id=-1)
+
         if self.pk:  # does this score already exists (!= updated)
             old_score = Score.objects.get(pk=self.pk)
 
@@ -47,10 +50,22 @@ class Score(Model):
             old_user_current_score.update(-old_score.value)
             old_user_current_score.save()
 
+            score_post = Post(author=old_score.user,
+                              type='s',
+                              content='{} points'.format(old_score.value),
+                              channel=game_channel)
+            score_post.save()
+
         current_score, created = CurrentScore.objects.get_or_create(
             user=self.user, defaults={'value': 0})
         current_score.update(self.value)
         current_score.save()
+
+        score_post = Post(author=current_score.user,
+                          type='s',
+                          content='{} points'.format(current_score.value),
+                          channel=game_channel)
+        score_post.save()
 
         super(Score, self).save(*args, **kwargs)
 
