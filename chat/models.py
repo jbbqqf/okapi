@@ -67,6 +67,27 @@ class Post(Model):
     content = CharField(max_length=512)
     channel = ForeignKey(Channel)
 
+    def save(self, *args, **kwargs):
+        # only if this post does not already exists (!= updated)
+        if not self.pk:
+            created = True
+
+        super(Post, self).save(*args, **kwargs)
+
+        if created:
+            if self.channel.id == 1 and self.type == 'm':
+                from preums.utils import is_preums, is_deuz, is_troiz, is_dernz
+                preums_keywords = [
+                    ('preums', is_preums),
+                    ('deuz', is_deuz),
+                    ('troiz', is_troiz),
+                    ('dernz', is_dernz),
+                ]
+
+                for keyword, function in preums_keywords:
+                    if self.content == keyword:
+                        function(self)
+
     def __unicode__(self):
         return u'[{}] {}: {}'.format(self.channel, self.author, self.content)
 
