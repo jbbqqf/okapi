@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 
+from django.db import DataError
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.decorators import (
     api_view, list_route, authentication_classes, permission_classes,
@@ -11,7 +12,7 @@ from rest_framework.authentication import (
     TokenAuthentication, SessionAuthentication)
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED
+from rest_framework.status import HTTP_201_CREATED, HTTP_409_CONFLICT
 from rest_framework.throttling import UserRateThrottle
 
 from common.pagination import GamePagination
@@ -37,7 +38,12 @@ def clear(request):
     """
 
     clear = Clear(user=request.user)
-    clear.save()
+    try:
+        clear.save()
+
+    except DataError:
+        error = {'message': 'You cannot clear two times in a row !'}
+        return Response(error, status=HTTP_409_CONFLICT)
 
     serializer = ClearSerializer(clear)
     return Response(serializer.data, status=HTTP_201_CREATED)
