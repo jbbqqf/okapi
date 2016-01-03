@@ -37,6 +37,9 @@ class Clear(Model):
         delta = self.date - latest.date
         points = delta.seconds * 10
 
+        score = Score(user=latest.user, game='b', value=-points)
+        score.save()
+
         score = Score(user=self.user, game='b', value=points)
         score.save()
 

@@ -63,7 +63,7 @@ class Score(Model):
 
         score_post = Post(author=current_score.user,
                           type='s',
-                          content='{} points'.format(current_score.value),
+                          content='{} points'.format(self.value),
                           channel=game_channel)
         score_post.save()
 
