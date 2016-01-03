@@ -124,7 +124,7 @@ def mystats(request):
         my_reverse_rank = 0
 
     my_stats = {
-        'my_score': players_scores[me],
+        'my_score': players_scores.get(me, default=0),
         'my_rank': my_rank,
         'my_reverse_rank': my_reverse_rank,
         'players_count': players_count,
