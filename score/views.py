@@ -92,9 +92,10 @@ def mystats(request):
 
     The response will contain those fields :
       * my_score : user score for considered game(s) as int
-      * my_rank : user ranking as int
-      * my_reverse_rank : players_count - my_rank + 1 as int
-      * players_count : number of players having at least one Score entry as
+      * my_rank : user ranking as int or 0 if has no Score entries
+      * my_reverse_rank : players_count - my_rank + 1 as int or 0 if has no
+                          Score entries
+      * players_count : number of players having at least one Score entries as
                         int
     """
 
