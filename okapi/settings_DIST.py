@@ -57,6 +57,7 @@ INSTALLED_APPS = (
     'library',
     'score',
     'button',
+    'preums',
 )
 
 MIDDLEWARE_CLASSES = (
