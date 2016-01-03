@@ -65,7 +65,7 @@ def is_troiz(post):
                                                       deuz.author])
             if troiz == post:
                 if post.author not in [preums.author, deuz.author]:
-                    score = Score(user=post.author, game='d', value=100000)
+                    score = Score(user=post.author, game='t', value=100000)
                     score.save()
 
 
