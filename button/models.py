@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import DataError, OperationalError
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import (Model, ForeignKey, DateTimeField)
 from django.forms import ModelForm
 
@@ -28,7 +29,19 @@ class Clear(Model):
             raise OperationalError('Hey ! you can\'t change old clears, you '
                                    'little cheater !')
 
-        latest = Clear.objects.latest('date')
+        try:
+            latest = Clear.objects.latest('date')
+
+        except ObjectDoesNotExist:
+            # if there is no latest button clear it means this one is the
+            # first one and the +10000 points is totally arbitrary
+            super(Clear, self).save(*args, **kwargs)
+
+            score = Score(user=self.user, game='b', value=10000)
+            score.save()
+
+            return
+
         if latest.user == self.user:
             raise DataError('A user cannot clear two times in a row')
 
