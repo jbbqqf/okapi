@@ -24,6 +24,7 @@ class Score(Model):
         ('p', 'preums'),
         ('d', 'deuz'),
         ('t', 'troiz'),
+        ('n', 'dernz'),
         ('b', 'button'),
     )
 

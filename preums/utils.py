@@ -70,4 +70,30 @@ def is_troiz(post):
 
 
 def is_dernz(post):
-    pass
+    general_channel = Channel.objects.get(id=1)
+
+    paris_tz = timezone('UTC')
+    post_day = paris_tz.localize(datetime(post.date.year,
+                                          post.date.month,
+                                          post.date.day))
+
+    latests_dernz = Post.objects.filter(channel=general_channel,
+                                        type='m',
+                                        date__gte=post_day,
+                                        date__lte=post.date,
+                                        content='dernz')
+
+    user_latests_dernz = latests_dernz.filter(author=post.author)
+
+    # if there is exactly one it's the first one
+    if user_latests_dernz.count() == 1:
+        latests_dernz = latests_dernz.exclude(author=post.author)
+
+        if latests_dernz.exists():
+            latest_dernz = latests_dernz.order_by('-date')[0]
+
+            score = Score(user=latest_dernz.author, game='n', value=-300000)
+            score.save()
+
+        score = Score(user=post.author, game='n', value=300000)
+        score.save()
