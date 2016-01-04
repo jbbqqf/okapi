@@ -77,11 +77,13 @@ class Post(Model):
         if created:
             if self.channel.id == 1 and self.type == 'm':
                 from preums.utils import is_preums, is_deuz, is_troiz, is_dernz
+                from alone.utils import is_alone
                 preums_keywords = [
                     ('preums', is_preums),
                     ('deuz', is_deuz),
                     ('troiz', is_troiz),
                     ('dernz', is_dernz),
+                    ('alone on karibou', is_alone),
                 ]
 
                 for keyword, function in preums_keywords:
