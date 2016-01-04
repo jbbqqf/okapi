@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^score/', include('score.urls')),
     url(r'^button/', include('button.urls')),
 
-    url(r'^{}/(.*)$'.format(settings.PRIVATE_MEDIA_URL),
+    url(r'^{}(.*)$'.format(settings.PRIVATE_MEDIA_URL.lstrip('/')),
         'common.private_media.serve_private_media'),
 
     url(r'^docs/', include('rest_framework_swagger.urls')),
