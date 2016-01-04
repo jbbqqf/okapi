@@ -26,6 +26,7 @@ class Score(Model):
         ('t', 'troiz'),
         ('n', 'dernz'),
         ('b', 'button'),
+        ('a', 'alone on karibou'),
     )
 
     user = ForeignKey(User)
