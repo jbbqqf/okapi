@@ -139,6 +139,11 @@ MEDIA_ROOT = '/PATH/TO/okapi/www/media'
 
 MEDIA_URL = '/media/'
 
+PRIVATE_MEDIA_ROOT = '/PATH/TO/okapi/www/private_media'
+
+PRIVATE_MEDIA_URL = '/private_media/'
+
+
 # REST framework custom settings
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
