@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from os.path import join
+from os.path import join, isfile
 from django.conf import settings
 from django.http import HttpResponse
 
@@ -23,9 +23,14 @@ def is_allowed(request):
 def serve_private_media(request, path):
     if is_allowed(request):
         fullpath = join(settings.PRIVATE_MEDIA_ROOT, path)
-        response = HttpResponse()
-        response['X-Sendfile'] = fullpath
-        return response
+        if isfile(fullpath):
+            response = HttpResponse()
+            response['X-Sendfile'] = fullpath
+            return response
+
+        else:
+            error = 'Ressource {} not found'.format(path)
+            return HttpResponse(error, status=404)
 
     else:
         return HttpResponse('Unauthorized', status=401)
